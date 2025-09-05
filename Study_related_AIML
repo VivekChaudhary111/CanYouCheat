@@ -1,1 +1,29 @@
+here it is the directory layout of the AI - delelopment
 
+/ai-proctoring-service
+│
+├── /models
+│   ├── face_detection.py         # Detect multiple faces, spoofing, etc.
+│   ├── audio_analysis.py         # Detect background voices, noise anomalies
+│   └── behavior_monitor.py       # Optional: gaze tracking, head movement
+│
+├── /utils
+│   ├── video_stream_handler.py   # Frame extraction, preprocessing
+│   ├── audio_stream_handler.py   # Audio segmentation, feature extraction
+│   └── logger.py                 # Logging and alert generation
+│
+├── /api
+│   ├── routes.py                 # Flask/FastAPI endpoints
+│   └── middleware.py             # Auth, rate limiting, etc.
+│
+├── /config
+│   └── settings.yaml             # Thresholds, model paths, tuning params
+│
+├── /tests
+│   ├── test_face_detection.py
+│   ├── test_audio_analysis.py
+│   └── test_api_endpoints.py
+│
+├── requirements.txt             # Python dependencies
+├── run.py                       # Entry point for the service
+└── README.md
