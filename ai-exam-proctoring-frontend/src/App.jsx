@@ -5,7 +5,7 @@ import WebcamProctor from './components/WebcamProctor'
 import Timer from './components/Timer'
 
 function App() {
-    return (
+    return(
         <div className="min-h-screen flex flex-col">
             <Header />
             <main className="flex-grow text-center p-4">
