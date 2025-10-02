@@ -6,9 +6,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ExamList from './pages/ExamList';
-import ExamTaking from './pages/ExamTaking';
+import ExamTaking from './pages/ExamTaking/ExamTaking'; // Updated import path
 import ProctoringDashboard from './pages/ProctoringDashboard';
 import CreateExam from './pages/CreateExam';
+import ManageStudents from './pages/ManageStudents';
+import ExamResults from './pages/ExamResults';
+import EditExam from './pages/EditExam';
 import './App.css';
 
 function App() {
@@ -24,9 +27,13 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/exams" element={<ExamList />} />
-              <Route path="/exam/:id/take" element={<ExamTaking />} />
+              {/* Fixed route path to match ExamList navigation */}
+              <Route path="/exams/:examId/take" element={<ExamTaking />} />
               <Route path="/proctoring" element={<ProctoringDashboard />} />
               <Route path="/create-exam" element={<CreateExam />} />
+              <Route path="/exams/:examId/students" element={<ManageStudents />} />
+              <Route path="/exams/:examId/results" element={<ExamResults />} />
+              <Route path="/exams/:examId/edit" element={<EditExam />} />
             </Routes>
           </main>
         </div>
@@ -36,3 +43,4 @@ function App() {
 }
 
 export default App;
+ 

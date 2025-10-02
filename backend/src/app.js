@@ -3,12 +3,14 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 require('dotenv').config();
 
+console.log('🚀 Initializing AI-Enhanced Online Exam Proctoring System...');
+
 const app = express();
 
 // Connect to database for AI proctoring system
 connectDB();
 
-// Middleware for AI proctoring system
+// Enable CORS with specific origins for AI proctoring security
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
@@ -21,15 +23,27 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Trust proxy for deployment
-app.set('trust proxy', 1);
+// app.set('trust proxy', true);
 
 // Initialize Passport AFTER body parsing middleware
 console.log('🔧 Initializing Passport for AI Proctoring Authentication...');
 const passport = require('./config/passport');
 app.use(passport.initialize());
 
-// Routes for AI-Enhanced Exam Proctoring System
+// AI Proctoring System Routes
+console.log('🔗 Setting up AI Proctoring API routes...');
+
+// Authentication routes
 app.use('/api/auth', require('./routes/authRoutes'));
+
+// Exam management routes
+app.use('/api/exams', require('./routes/examRoutes'));
+
+// Proctoring routes
+app.use('/api/proctoring', require('./routes/proctoringRoutes'));
+
+// Dashboard routes - ADD THIS LINE
+app.use('/api', require('./routes/dashboardRoutes'));
 
 // Health check endpoint for AI proctoring system
 app.get('/', (req, res) => {
@@ -47,7 +61,10 @@ app.get('/', (req, res) => {
       'AI Risk Scoring'
     ],
     endpoints: {
-      auth: '/api/auth'
+      auth: '/api/auth',
+      exams: '/api/exams',
+      proctoring: '/api/proctoring',
+      dashboard: '/api/instructor/dashboard | /api/student/dashboard'
     }
   });
 });
@@ -98,7 +115,9 @@ app.use((req, res) => {
       'GET /',
       'GET /api/status',
       'POST /api/auth/register',
-      'POST /api/auth/login'
+      'POST /api/auth/login',
+      'GET /api/instructor/dashboard',
+      'GET /api/student/dashboard'
     ]
   });
 });
