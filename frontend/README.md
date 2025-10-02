@@ -1,70 +1,535 @@
-# Getting Started with Create React App
+# AI-Enhanced Online Exam Proctoring System - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+  <h3>🔒 Modern React.js Frontend for AI-Powered Exam Proctoring</h3>
+  <p>Advanced user interface for secure remote examinations with real-time AI behavior analysis</p>
+  
+  ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)
+  ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript)
+  ![CSS3](https://img.shields.io/badge/CSS3-Modern-1572B6?style=for-the-badge&logo=css3)
+  ![Responsive](https://img.shields.io/badge/Design-Responsive-green?style=for-the-badge)
+</div>
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 **Quick Start**
 
-### `npm start`
+### Prerequisites
+- Node.js (v16.0.0 or higher)
+- npm (v8.0.0 or higher) or yarn
+- Modern web browser with webcam/microphone support
+- Backend server running on `http://localhost:5000`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Installation & Setup
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+# Clone the repository
+git clone https://github.com/VivekChaudhary111/CanYouCheat.git
+cd CanYouCheat/frontend
 
-### `npm test`
+# Install dependencies
+npm install
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Start development server
+npm start
 
-### `npm run build`
+# Build for production
+npm run build
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Run tests
+npm test
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The application will be available at `http://localhost:3000`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🏗️ **Project Architecture**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### **Folder Structure**
+```
+src/
+├── components/          # Reusable UI components
+│   ├── Navbar.js       # Navigation bar with user profile
+│   └── Navbar.css      # Navigation styling
+├── context/            # React Context providers
+│   └── AuthContext.js  # Authentication state management
+├── pages/              # Page components (route-specific)
+│   ├── Auth.css        # Authentication pages styling
+│   ├── ChangePassword.js
+│   ├── CreateExam.js   # Exam creation interface
+│   ├── Dashboard.js    # Main dashboard
+│   ├── ExamList.js     # Exam listing and management
+│   ├── ExamResults.js  # Results and analytics
+│   ├── Login.js        # User authentication
+│   ├── Profile.js      # User profile management
+│   ├── Settings.js     # System preferences
+│   └── ExamTaking/     # Exam-taking module
+│       ├── ExamTaking.js
+│       ├── components/ # Exam-specific components
+│       ├── hooks/      # Custom hooks for exam logic
+│       └── utils/      # Exam utility functions
+├── services/           # API communication services
+├── utils/              # Shared utility functions
+├── hooks/              # Custom React hooks
+├── App.js              # Main application component
+└── index.js            # Application entry point
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### **Component Hierarchy**
+```
+App
+├── Navbar (if authenticated)
+├── AuthContext.Provider
+└── Router
+    ├── LoginPage
+    ├── RegisterPage
+    ├── Dashboard
+    ├── ExamList
+    ├── CreateExam (Instructor only)
+    ├── ExamTaking
+    │   ├── SystemCheck
+    │   ├── WebcamMonitor
+    │   ├── QuestionDisplay
+    │   └── SubmissionConfirm
+    ├── Profile
+    ├── Settings
+    └── ChangePassword
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🎯 **Core Features**
 
-## Learn More
+### **🔐 Authentication System**
+- **Multi-role Support**: Students, Instructors, Administrators
+- **JWT Token Management**: Secure session handling
+- **Password Security**: Strength validation and secure storage
+- **Session Persistence**: Automatic login restoration
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```javascript
+// Authentication Context Usage
+const { user, isAuthenticated, isInstructor, login, logout } = useAuth();
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### **🎓 Student Features**
+- **Exam Taking Interface**: Full-screen proctored exam experience
+- **Real-time Monitoring**: Webcam and audio surveillance
+- **System Checks**: Pre-exam technical verification
+- **Progress Tracking**: Live exam progress and time management
+- **Results Viewing**: Post-exam performance analytics
 
-### Code Splitting
+### **👨‍🏫 Instructor Features**
+- **Exam Creation**: Comprehensive exam builder with AI settings
+- **Student Management**: Assign and manage exam participants
+- **Live Monitoring**: Real-time proctoring dashboard
+- **Analytics Dashboard**: Detailed performance and behavior insights
+- **Evidence Review**: AI-flagged incidents and manual verification
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### **🤖 AI Proctoring Integration**
+- **Behavior Analysis**: Real-time suspicious activity detection
+- **Risk Scoring**: AI-powered integrity assessment
+- **Evidence Collection**: Automated screenshot and video capture
+- **Multi-modal Detection**: Face, eye, audio, and movement analysis
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🔧 **Key Components**
 
-### Making a Progressive Web App
+### **ExamTaking Module**
+The most critical component handling the actual exam experience:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```javascript
+// Core exam-taking components
+ExamTaking/
+├── ExamTaking.js          # Main exam controller
+├── components/
+│   ├── SystemCheck.js     # Pre-exam verification
+│   ├── WebcamMonitor.js   # AI monitoring interface
+│   ├── QuestionDisplay.js # Question rendering
+│   └── SubmissionConfirm.js # Exam submission
+├── hooks/
+│   ├── useExamTimer.js    # Time management
+│   ├── useWebcamAccess.js # Camera permissions
+│   └── useExamSubmission.js # Answer handling
+└── utils/
+    ├── cameraUtils.js     # Camera utilities
+    └── examValidation.js  # Answer validation
+```
 
-### Advanced Configuration
+### **Authentication Flow**
+```javascript
+// Login process with role-based routing
+const handleLogin = async (credentials) => {
+  const result = await login(email, password, role);
+  if (result.success) {
+    navigate(role === 'instructor' ? '/dashboard' : '/exams');
+  }
+};
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### **AI Monitoring Integration**
+```javascript
+// WebcamMonitor component
+const WebcamMonitor = () => {
+  const [behaviorData, setBehaviorData] = useState({});
+  const [riskScore, setRiskScore] = useState(0);
+  
+  // Real-time AI analysis
+  useEffect(() => {
+    analyzeBehavior(videoStream);
+  }, [videoStream]);
+};
+```
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🎨 **Design System**
 
-### `npm run build` fails to minify
+### **Color Palette**
+```css
+/* Primary Colors - AI/Technology Theme */
+--primary-blue: #3b82f6;      /* Main actions */
+--primary-purple: #8b5cf6;    /* AI features */
+--success-green: #10b981;     /* Success states */
+--warning-amber: #f59e0b;     /* Cautions */
+--danger-red: #ef4444;        /* Alerts/Errors */
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+/* Neutral Colors */
+--gray-50: #f9fafb;          /* Backgrounds */
+--gray-900: #111827;         /* Text */
+--white: #ffffff;            /* Cards/Modals */
+```
+
+### **Typography**
+```css
+/* Font Stack */
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+/* Font Scales */
+--text-xs: 0.75rem;      /* 12px - Labels */
+--text-sm: 0.875rem;     /* 14px - Body text */
+--text-base: 1rem;       /* 16px - Default */
+--text-lg: 1.125rem;     /* 18px - Headings */
+--text-xl: 1.25rem;      /* 20px - Page titles */
+--text-2xl: 1.5rem;      /* 24px - Main headings */
+```
+
+### **Responsive Breakpoints**
+```css
+/* Mobile First Approach */
+@media (min-width: 640px)  { /* sm */ }
+@media (min-width: 768px)  { /* md */ }
+@media (min-width: 1024px) { /* lg */ }
+@media (min-width: 1280px) { /* xl */ }
+```
+
+---
+
+## 🔄 **State Management**
+
+### **AuthContext Pattern**
+```javascript
+// Global authentication state
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
+  // Computed properties
+  const isInstructor = user?.role === 'instructor';
+  const isStudent = user?.role === 'student';
+  
+  return (
+    <AuthContext.Provider value={{ 
+      user, isAuthenticated, isInstructor, isStudent, login, logout 
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+```
+
+### **Local State Patterns**
+```javascript
+// Component-level state for forms
+const [formData, setFormData] = useState({
+  email: '',
+  password: '',
+  role: 'student'
+});
+
+// Async operation state
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState('');
+const [success, setSuccess] = useState(false);
+```
+
+---
+
+## 🔌 **API Integration**
+
+### **Service Layer Structure**
+```javascript
+// API base configuration
+const API_BASE = 'http://localhost:5000/api';
+
+// Authentication service
+export const authService = {
+  login: (credentials) => post('/auth/login', credentials),
+  register: (userData) => post('/auth/register', userData),
+  verify: () => get('/auth/verify')
+};
+
+// Exam service
+export const examService = {
+  getExams: () => get('/exams'),
+  createExam: (examData) => post('/exams', examData),
+  submitExam: (examId, answers) => post(`/exams/${examId}/submit`, answers)
+};
+```
+
+### **Error Handling Pattern**
+```javascript
+// Consistent error handling across components
+const handleApiError = (error) => {
+  if (error.response?.status === 401) {
+    logout(); // Token expired
+    navigate('/login');
+  } else {
+    setError(error.response?.data?.message || 'An error occurred');
+  }
+};
+```
+
+---
+
+## 🧪 **Testing Strategy**
+
+### **Testing Structure**
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm test -- --coverage
+
+# Run specific test file
+npm test -- ExamTaking.test.js
+```
+
+### **Test Categories**
+- **Unit Tests**: Individual components and utilities
+- **Integration Tests**: Component interactions and API calls
+- **E2E Tests**: Full user workflows (planned)
+
+### **Example Test Pattern**
+```javascript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { AuthProvider } from '../context/AuthContext';
+import Login from '../pages/Login';
+
+test('login form submission', async () => {
+  render(
+    <AuthProvider>
+      <Login />
+    </AuthProvider>
+  );
+  
+  fireEvent.change(screen.getByLabelText(/email/i), {
+    target: { value: 'test@example.com' }
+  });
+  
+  fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+  
+  expect(screen.getByText(/signing in/i)).toBeInTheDocument();
+});
+```
+
+---
+
+## 📱 **Browser Compatibility**
+
+### **Supported Browsers**
+| Browser | Version | Features |
+|---------|---------|----------|
+| Chrome | 90+ | ✅ Full support |
+| Firefox | 88+ | ✅ Full support |
+| Safari | 14+ | ✅ WebRTC supported |
+| Edge | 90+ | ✅ Full support |
+
+### **Required Browser APIs**
+- **MediaDevices API**: Webcam and microphone access
+- **WebRTC**: Real-time communication
+- **LocalStorage**: Session persistence
+- **Fullscreen API**: Exam-taking mode
+- **Notification API**: Alert system
+
+---
+
+## 🚀 **Performance Optimizations**
+
+### **Code Splitting**
+```javascript
+// Lazy loading for better performance
+const ExamTaking = lazy(() => import('./pages/ExamTaking/ExamTaking'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+
+// Usage with Suspense
+<Suspense fallback={<LoadingSpinner />}>
+  <Routes>
+    <Route path="/exam/:id" element={<ExamTaking />} />
+    <Route path="/dashboard" element={<Dashboard />} />
+  </Routes>
+</Suspense>
+```
+
+### **Optimization Strategies**
+- **Image Optimization**: WebP format with fallbacks
+- **Bundle Analysis**: Regular bundle size monitoring
+- **Memoization**: React.memo for expensive components
+- **Virtual Scrolling**: For large data lists
+- **Service Workers**: Caching strategy (planned)
+
+---
+
+## 🔒 **Security Features**
+
+### **Client-Side Security**
+- **JWT Token Management**: Secure storage and automatic refresh
+- **Input Validation**: XSS prevention and data sanitization
+- **HTTPS Enforcement**: Secure communication only
+- **CSP Headers**: Content Security Policy implementation
+- **Session Management**: Automatic logout on inactivity
+
+### **Proctoring Security**
+- **Screen Recording Prevention**: Fullscreen enforcement
+- **Tab Switching Detection**: Activity monitoring
+- **Copy-Paste Blocking**: Exam integrity measures
+- **Developer Tools Detection**: Anti-cheating measures
+
+---
+
+## 🌐 **Accessibility (A11y)**
+
+### **WCAG 2.1 Compliance**
+- **Keyboard Navigation**: Full keyboard support
+- **Screen Reader Support**: ARIA labels and descriptions
+- **Color Contrast**: WCAG AA standard compliance
+- **Focus Management**: Logical tab order
+- **Alternative Text**: Images and icons
+- **Form Labels**: Proper form associations
+
+### **Accessibility Testing**
+```bash
+# Install accessibility testing tools
+npm install --save-dev @axe-core/react
+
+# Integration in tests
+import { axe, toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
+```
+
+---
+
+## 📊 **Analytics & Monitoring**
+
+### **User Analytics**
+- **Exam Completion Rates**: Success/failure tracking
+- **Performance Metrics**: Load times and interactions
+- **Error Tracking**: Client-side error reporting
+- **User Behavior**: Navigation patterns and feature usage
+
+### **AI Monitoring Dashboard**
+- **Real-time Behavior Analysis**: Live proctoring feed
+- **Risk Assessment Visualization**: Dynamic charts and alerts
+- **Evidence Management**: Flagged incident review
+- **Statistical Reports**: Comprehensive analytics
+
+---
+
+## 📚 **Additional Resources**
+
+### **Development Resources**
+- [React Documentation](https://reactjs.org/docs)
+- [Create React App Guide](https://create-react-app.dev/)
+- [React Router Documentation](https://reactrouter.com/)
+- [WebRTC API Reference](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API)
+
+### **AI Proctoring Resources**
+- [MediaDevices API](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices)
+- [Computer Vision with JavaScript](https://docs.opencv.org/4.x/df/d0a/tutorial_js_table_of_contents_setup.html)
+- [Machine Learning in Browser](https://www.tensorflow.org/js)
+
+### **Security Best Practices**
+- [OWASP Frontend Security](https://owasp.org/www-project-front-end-security/)
+- [React Security Best Practices](https://snyk.io/blog/10-react-security-best-practices/)
+
+---
+
+## 🤝 **Contributing**
+
+### **Development Workflow**
+1. **Fork the repository** and create a feature branch
+2. **Follow coding standards** and component patterns
+3. **Write tests** for new functionality
+4. **Update documentation** as needed
+5. **Submit pull request** with detailed description
+
+### **Code Standards**
+- **ESLint Configuration**: Consistent code formatting
+- **Prettier Integration**: Automatic code formatting
+- **Component Naming**: PascalCase for components
+- **File Organization**: Feature-based folder structure
+- **Git Conventions**: Conventional commit messages
+
+### **Pull Request Template**
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Manual testing completed
+- [ ] Accessibility tested
+
+## Screenshots (if applicable)
+Add screenshots for UI changes
+```
+
+---
+
+## 📞 **Support & Contact**
+
+### **Team Contact**
+- **Project Lead**: Vivek Chaudhary
+- **Repository**: [CanYouCheat](https://github.com/VivekChaudhary111/CanYouCheat)
+- **Branch**: `vivek` (active development)
+
+### **Issue Reporting**
+For bugs, feature requests, or questions:
+1. Check existing issues first
+2. Use appropriate issue templates
+3. Provide detailed reproduction steps
+4. Include browser and system information
+
+---
+
+## 📄 **License**
+
+This project is part of the **AI-Enhanced Online Exam Proctoring System** developed for educational purposes and academic integrity enhancement.
+
+---
+
+<div align="center">
+  <p><strong>Built with ❤️ for secure online education</strong></p>
+  <p>🔒 Ensuring Academic Integrity with AI-Powered Proctoring</p>
+</div>

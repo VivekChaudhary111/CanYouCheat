@@ -23,7 +23,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Trust proxy for deployment
-// app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 // Initialize Passport AFTER body parsing middleware
 console.log('🔧 Initializing Passport for AI Proctoring Authentication...');
