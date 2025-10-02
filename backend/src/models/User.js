@@ -28,6 +28,18 @@ const userSchema = new mongoose.Schema({
     },
     default: 'student'
   },
+   bio: {
+    type: String,
+    maxlength: [500, 'Bio cannot exceed 500 characters']
+  },
+  institution: {
+    type: String,
+    maxlength: [200, 'Institution name cannot exceed 200 characters']
+  },
+  department: {
+    type: String,
+    maxlength: [100, 'Department name cannot exceed 100 characters']
+  },
   isActive: {
     type: Boolean,
     default: true
@@ -111,6 +123,9 @@ userSchema.virtual('publicProfile').get(function() {
     name: this.name,
     email: this.email,
     role: this.role,
+    bio: this.bio,
+    institution: this.institution,
+    department: this.department,
     profilePicture: this.profilePicture,
     lastLogin: this.lastLogin,
     examHistory: this.examHistory

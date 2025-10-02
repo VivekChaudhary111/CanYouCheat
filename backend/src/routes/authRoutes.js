@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login } = require('../controllers/authController');
+const { register, login, verifyToken } = require('../controllers/authController');
 const validateRequest = require('../middlewares/validateRequest');
 const auth = require('../middlewares/auth');
 const User = require('../models/User');
@@ -11,6 +11,8 @@ router.post('/register', validateRequest(['name', 'email', 'password', 'role']),
 
 // Login route - role-based authentication for students and instructors
 router.post('/login', validateRequest(['email', 'password', 'role']), login);
+
+router.get('/verify', auth, verifyToken);
 
 // Add this route for AI Proctoring user verification
 router.get('/me', auth, async (req, res) => {

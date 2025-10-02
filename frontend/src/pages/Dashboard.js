@@ -44,7 +44,7 @@ const Dashboard = () => {
       const data = await response.json();
       setStats(data.stats);
       setRecentActivity(data.recentActivity || []);
-      console.log(`✅ Dashboard data loaded for ${user?.role}:`, data.stats);
+      console.log(`✅ Dashboard data loaded for ${user?.name}:`, data.stats);
     } else {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to load dashboard data');
@@ -89,7 +89,7 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div className="header-content">
           <div className="user-welcome">
-            <h1>Welcome back, {user?.name}</h1>
+            <h1>Welcome back, {user?.name || 'User'}</h1>  {/* Use actual name from database */}
             <p className="user-subtitle">
               {user?.role === 'instructor' 
                 ? 'AI-Enhanced Exam Management Dashboard'

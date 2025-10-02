@@ -12,6 +12,11 @@ import CreateExam from './pages/CreateExam';
 import ManageStudents from './pages/ManageStudents';
 import ExamResults from './pages/ExamResults';
 import EditExam from './pages/EditExam';
+
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import ChangePassword from './pages/ChangePassword';
+
 import './App.css';
 
 function App() {
@@ -34,6 +39,10 @@ function App() {
               <Route path="/exams/:examId/students" element={<ManageStudents />} />
               <Route path="/exams/:examId/results" element={<ExamResults />} />
               <Route path="/exams/:examId/edit" element={<EditExam />} />
+
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/change-password" element={<ChangePassword />} />
             </Routes>
           </main>
         </div>
