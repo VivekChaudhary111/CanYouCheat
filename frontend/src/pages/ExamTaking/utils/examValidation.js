@@ -270,8 +270,13 @@ export const validateSubmissionTiming = (exam, startTime, endTime) => {
 export const validateExamEnvironment = () => {
   const issues = [];
 
+  // Configurable percentage threshold for developer tools detection
+  const DEVTOOLS_HEIGHT_DIFF_PERCENT = 0.2; // 20%
   // Check for developer tools (basic detection)
-  if (window.outerHeight - window.innerHeight > 200) {
+  if (
+    window.outerHeight > 0 && // avoid division by zero
+    (window.outerHeight - window.innerHeight) > window.outerHeight * DEVTOOLS_HEIGHT_DIFF_PERCENT
+  ) {
     issues.push('Developer tools may be open');
   }
 
