@@ -1,0 +1,3 @@
+# Keep .github directory for project documentation
+# Remove the following line to track GitHub workflows and project docs
+.github/
