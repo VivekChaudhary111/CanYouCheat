@@ -169,7 +169,7 @@ export const getCameraDeviceInfo = async () => {
     
     return cameras.map(camera => ({
       deviceId: camera.deviceId,
-      label: camera.label || `Camera ${camera.deviceId.substr(0, 8)}`,
+      label: camera.label || `Camera ${camera.deviceId.slice(0, 8)}`,
       groupId: camera.groupId
     }));
   } catch (error) {
