@@ -1,7 +1,7 @@
 # AI-Enhanced Online Exam Proctoring System - Frontend
 
 <div align="center">
-  <h3>🔒 Modern React.js Frontend for AI-Powered Exam Proctoring</h3>
+  <h3>Modern React.js Frontend for AI-Powered Exam Proctoring</h3>
   <p>Advanced user interface for secure remote examinations with real-time AI behavior analysis</p>
   
   ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)
@@ -12,7 +12,7 @@
 
 ---
 
-## 🚀 **Quick Start**
+## Quick Start
 
 ### Prerequisites
 - Node.js (v16.0.0 or higher)
@@ -44,9 +44,9 @@ The application will be available at `http://localhost:3000`
 
 ---
 
-## 🏗️ **Project Architecture**
+## Project Architecture
 
-### **Folder Structure**
+### Folder Structure
 ```
 src/
 ├── components/          # Reusable UI components
@@ -76,7 +76,7 @@ src/
 └── index.js            # Application entry point
 ```
 
-### **Component Hierarchy**
+### Component Hierarchy
 ```
 App
 ├── Navbar (if authenticated)
@@ -99,9 +99,9 @@ App
 
 ---
 
-## 🎯 **Core Features**
+## Core Features
 
-### **🔐 Authentication System**
+### Authentication System
 - **Multi-role Support**: Students, Instructors, Administrators
 - **JWT Token Management**: Secure session handling
 - **Password Security**: Strength validation and secure storage
@@ -112,21 +112,21 @@ App
 const { user, isAuthenticated, isInstructor, login, logout } = useAuth();
 ```
 
-### **🎓 Student Features**
+### Student Features
 - **Exam Taking Interface**: Full-screen proctored exam experience
 - **Real-time Monitoring**: Webcam and audio surveillance
 - **System Checks**: Pre-exam technical verification
 - **Progress Tracking**: Live exam progress and time management
 - **Results Viewing**: Post-exam performance analytics
 
-### **👨‍🏫 Instructor Features**
+### Instructor Features
 - **Exam Creation**: Comprehensive exam builder with AI settings
 - **Student Management**: Assign and manage exam participants
 - **Live Monitoring**: Real-time proctoring dashboard
 - **Analytics Dashboard**: Detailed performance and behavior insights
 - **Evidence Review**: AI-flagged incidents and manual verification
 
-### **🤖 AI Proctoring Integration**
+### AI Proctoring Integration
 - **Behavior Analysis**: Real-time suspicious activity detection
 - **Risk Scoring**: AI-powered integrity assessment
 - **Evidence Collection**: Automated screenshot and video capture
@@ -134,9 +134,9 @@ const { user, isAuthenticated, isInstructor, login, logout } = useAuth();
 
 ---
 
-## 🔧 **Key Components**
+## Key Components
 
-### **ExamTaking Module**
+### ExamTaking Module
 The most critical component handling the actual exam experience:
 
 ```javascript
@@ -157,7 +157,7 @@ ExamTaking/
     └── examValidation.js  # Answer validation
 ```
 
-### **Authentication Flow**
+### Authentication Flow
 ```javascript
 // Login process with role-based routing
 const handleLogin = async (credentials) => {
@@ -168,7 +168,7 @@ const handleLogin = async (credentials) => {
 };
 ```
 
-### **AI Monitoring Integration**
+### AI Monitoring Integration
 ```javascript
 // WebcamMonitor component
 const WebcamMonitor = () => {
@@ -184,9 +184,9 @@ const WebcamMonitor = () => {
 
 ---
 
-## 🎨 **Design System**
+## Design System
 
-### **Color Palette**
+### Color Palette
 ```css
 /* Primary Colors - AI/Technology Theme */
 --primary-blue: #3b82f6;      /* Main actions */
@@ -201,7 +201,7 @@ const WebcamMonitor = () => {
 --white: #ffffff;            /* Cards/Modals */
 ```
 
-### **Typography**
+### Typography
 ```css
 /* Font Stack */
 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -215,7 +215,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 --text-2xl: 1.5rem;      /* 24px - Main headings */
 ```
 
-### **Responsive Breakpoints**
+### Responsive Breakpoints
 ```css
 /* Mobile First Approach */
 @media (min-width: 640px)  { /* sm */ }
@@ -226,9 +226,9 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
 ---
 
-## 🔄 **State Management**
+## State Management
 
-### **AuthContext Pattern**
+### AuthContext Pattern
 ```javascript
 // Global authentication state
 const AuthContext = createContext();
@@ -252,7 +252,7 @@ export const AuthProvider = ({ children }) => {
 };
 ```
 
-### **Local State Patterns**
+### Local State Patterns
 ```javascript
 // Component-level state for forms
 const [formData, setFormData] = useState({
@@ -269,9 +269,9 @@ const [success, setSuccess] = useState(false);
 
 ---
 
-## 🔌 **API Integration**
+## API Integration
 
-### **Service Layer Structure**
+### Service Layer Structure
 ```javascript
 // API base configuration
 const API_BASE = 'http://localhost:5000/api';
@@ -291,7 +291,7 @@ export const examService = {
 };
 ```
 
-### **Error Handling Pattern**
+### Error Handling Pattern
 ```javascript
 // Consistent error handling across components
 const handleApiError = (error) => {
@@ -306,9 +306,9 @@ const handleApiError = (error) => {
 
 ---
 
-## 🧪 **Testing Strategy**
+## Testing Strategy
 
-### **Testing Structure**
+### Testing Structure
 ```bash
 # Run all tests
 npm test
@@ -320,12 +320,12 @@ npm test -- --coverage
 npm test -- ExamTaking.test.js
 ```
 
-### **Test Categories**
+### Test Categories
 - **Unit Tests**: Individual components and utilities
 - **Integration Tests**: Component interactions and API calls
 - **E2E Tests**: Full user workflows (planned)
 
-### **Example Test Pattern**
+### Example Test Pattern
 ```javascript
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AuthProvider } from '../context/AuthContext';
@@ -350,17 +350,17 @@ test('login form submission', async () => {
 
 ---
 
-## 📱 **Browser Compatibility**
+## Browser Compatibility
 
-### **Supported Browsers**
+### Supported Browsers
 | Browser | Version | Features |
 |---------|---------|----------|
-| Chrome | 90+ | ✅ Full support |
-| Firefox | 88+ | ✅ Full support |
-| Safari | 14+ | ✅ WebRTC supported |
-| Edge | 90+ | ✅ Full support |
+| Chrome | 90+ | Full support |
+| Firefox | 88+ | Full support |
+| Safari | 14+ | WebRTC supported |
+| Edge | 90+ | Full support |
 
-### **Required Browser APIs**
+### Required Browser APIs
 - **MediaDevices API**: Webcam and microphone access
 - **WebRTC**: Real-time communication
 - **LocalStorage**: Session persistence
@@ -369,9 +369,9 @@ test('login form submission', async () => {
 
 ---
 
-## 🚀 **Performance Optimizations**
+## Performance Optimizations
 
-### **Code Splitting**
+### Code Splitting
 ```javascript
 // Lazy loading for better performance
 const ExamTaking = lazy(() => import('./pages/ExamTaking/ExamTaking'));
@@ -386,7 +386,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 </Suspense>
 ```
 
-### **Optimization Strategies**
+### Optimization Strategies
 - **Image Optimization**: WebP format with fallbacks
 - **Bundle Analysis**: Regular bundle size monitoring
 - **Memoization**: React.memo for expensive components
@@ -395,16 +395,16 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 ---
 
-## 🔒 **Security Features**
+## Security Features
 
-### **Client-Side Security**
+### Client-Side Security
 - **JWT Token Management**: Secure storage and automatic refresh
 - **Input Validation**: XSS prevention and data sanitization
 - **HTTPS Enforcement**: Secure communication only
 - **CSP Headers**: Content Security Policy implementation
 - **Session Management**: Automatic logout on inactivity
 
-### **Proctoring Security**
+### Proctoring Security
 - **Screen Recording Prevention**: Fullscreen enforcement
 - **Tab Switching Detection**: Activity monitoring
 - **Copy-Paste Blocking**: Exam integrity measures
@@ -412,9 +412,9 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 ---
 
-## 🌐 **Accessibility (A11y)**
+## Accessibility (A11y)
 
-### **WCAG 2.1 Compliance**
+### WCAG 2.1 Compliance
 - **Keyboard Navigation**: Full keyboard support
 - **Screen Reader Support**: ARIA labels and descriptions
 - **Color Contrast**: WCAG AA standard compliance
@@ -422,7 +422,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 - **Alternative Text**: Images and icons
 - **Form Labels**: Proper form associations
 
-### **Accessibility Testing**
+### Accessibility Testing
 ```bash
 # Install accessibility testing tools
 npm install --save-dev @axe-core/react
@@ -434,15 +434,15 @@ expect.extend(toHaveNoViolations);
 
 ---
 
-## 📊 **Analytics & Monitoring**
+## Analytics & Monitoring
 
-### **User Analytics**
+### User Analytics
 - **Exam Completion Rates**: Success/failure tracking
 - **Performance Metrics**: Load times and interactions
 - **Error Tracking**: Client-side error reporting
 - **User Behavior**: Navigation patterns and feature usage
 
-### **AI Monitoring Dashboard**
+### AI Monitoring Dashboard
 - **Real-time Behavior Analysis**: Live proctoring feed
 - **Risk Assessment Visualization**: Dynamic charts and alerts
 - **Evidence Management**: Flagged incident review
@@ -450,42 +450,42 @@ expect.extend(toHaveNoViolations);
 
 ---
 
-## 📚 **Additional Resources**
+## Additional Resources
 
-### **Development Resources**
+### Development Resources
 - [React Documentation](https://reactjs.org/docs)
 - [Create React App Guide](https://create-react-app.dev/)
 - [React Router Documentation](https://reactrouter.com/)
 - [WebRTC API Reference](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API)
 
-### **AI Proctoring Resources**
+### AI Proctoring Resources
 - [MediaDevices API](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices)
 - [Computer Vision with JavaScript](https://docs.opencv.org/4.x/df/d0a/tutorial_js_table_of_contents_setup.html)
 - [Machine Learning in Browser](https://www.tensorflow.org/js)
 
-### **Security Best Practices**
+### Security Best Practices
 - [OWASP Frontend Security](https://owasp.org/www-project-front-end-security/)
 - [React Security Best Practices](https://snyk.io/blog/10-react-security-best-practices/)
 
 ---
 
-## 🤝 **Contributing**
+## Contributing
 
-### **Development Workflow**
+### Development Workflow
 1. **Fork the repository** and create a feature branch
 2. **Follow coding standards** and component patterns
 3. **Write tests** for new functionality
 4. **Update documentation** as needed
 5. **Submit pull request** with detailed description
 
-### **Code Standards**
+### Code Standards
 - **ESLint Configuration**: Consistent code formatting
 - **Prettier Integration**: Automatic code formatting
 - **Component Naming**: PascalCase for components
 - **File Organization**: Feature-based folder structure
 - **Git Conventions**: Conventional commit messages
 
-### **Pull Request Template**
+### Pull Request Template
 ```markdown
 ## Description
 Brief description of changes
@@ -507,14 +507,14 @@ Add screenshots for UI changes
 
 ---
 
-## 📞 **Support & Contact**
+## Support & Contact
 
-### **Team Contact**
+### Team Contact
 - **Project Lead**: Vivek Chaudhary
 - **Repository**: [CanYouCheat](https://github.com/VivekChaudhary111/CanYouCheat)
 - **Branch**: `vivek` (active development)
 
-### **Issue Reporting**
+### Issue Reporting
 For bugs, feature requests, or questions:
 1. Check existing issues first
 2. Use appropriate issue templates
@@ -523,13 +523,13 @@ For bugs, feature requests, or questions:
 
 ---
 
-## 📄 **License**
+## License
 
 This project is part of the **AI-Enhanced Online Exam Proctoring System** developed for educational purposes and academic integrity enhancement.
 
 ---
 
-<div align="center">
-  <p><strong>Built with ❤️ for secure online education</strong></p>
-  <p>🔒 Ensuring Academic Integrity with AI-Powered Proctoring</p>
+<div align="center>
+  <p><strong>Built with care for secure online education</strong></p>
+  <p>Ensuring Academic Integrity with AI-Powered Proctoring</p>
 </div>
