@@ -95,10 +95,14 @@ export const useExamTimer = () => {
   // Save timer state to localStorage for persistence
   useEffect(() => {
     if (isActive && timeRemaining > 0) {
-      localStorage.setItem('examTimer', JSON.stringify({
-        timeRemaining,
-        timestamp: Date.now()
-      }));
+      try {
+        localStorage.setItem('examTimer', JSON.stringify({
+          timeRemaining,
+          timestamp: Date.now()
+        }));
+      } catch (error) {
+        console.error('Error saving timer to localStorage:', error);
+      }
     }
   }, [timeRemaining, isActive]);
 
