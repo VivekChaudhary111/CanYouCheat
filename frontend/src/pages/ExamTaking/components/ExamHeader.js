@@ -2,48 +2,83 @@ import React from 'react';
 
 const ExamHeader = ({ 
   exam, 
-  timeRemaining, 
-  formatTime, 
   currentQuestion, 
   totalQuestions, 
-  onSubmit 
+  timeRemaining, 
+  isMonitoring 
 }) => {
-  const getTimeClass = () => {
-    if (timeRemaining <= 300) return 'time-critical'; // 5 minutes
-    if (timeRemaining <= 600) return 'time-warning'; // 10 minutes
-    return 'time-normal';
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hrs > 0) {
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const getTimeStatus = () => {
+    const totalTime = exam.duration * 60;
+    const percentage = (timeRemaining / totalTime) * 100;
+    
+    if (percentage <= 10) return 'critical';
+    if (percentage <= 25) return 'warning';
+    if (percentage <= 50) return 'caution';
+    return 'normal';
+  };
+
+  const timeStatus = getTimeStatus();
+
   return (
-    <div className="exam-header">
+    <header className="exam-header">
       <div className="exam-header-left">
-        <h1>{exam.title}</h1>
-        <div className="exam-progress">
-          Question {currentQuestion} of {totalQuestions}
+        <div className="exam-title">
+          <h1>{exam.title}</h1>
+          <div className="exam-progress-text">
+            Question {currentQuestion + 1} of {totalQuestions}
+          </div>
         </div>
       </div>
-      
+
       <div className="exam-header-center">
-        <div className="proctoring-status">
-          <span className="status-dot active"></span>
-          <span>AI Proctoring Active</span>
+        <div className="monitoring-status">
+          <div className={`monitoring-indicator ${isMonitoring ? 'active' : 'inactive'}`}>
+            <div className="status-dot"></div>
+            <div className="monitoring-text">
+              <span className="status-label">AI Monitoring</span>
+              <span className="status-value">{isMonitoring ? 'Active' : 'Inactive'}</span>
+            </div>
+          </div>
         </div>
       </div>
-      
+
       <div className="exam-header-right">
-        <div className={`timer ${getTimeClass()}`}>
-          <span className="timer-icon">⏰</span>
-          <span className="timer-text">{formatTime(timeRemaining)}</span>
+        <div className="exam-info">
+          <div className="info-item">
+            <span className="info-label">Total Marks</span>
+            <span className="info-value">{exam.totalMarks}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Duration</span>
+            <span className="info-value">{exam.duration} min</span>
+          </div>
         </div>
         
-        <button 
-          className="btn btn-primary submit-btn"
-          onClick={onSubmit}
-        >
-          Submit Exam
-        </button>
+        <div className={`time-display ${timeStatus}`}>
+          <div className="time-label">Time Remaining</div>
+          <div className="time-value">{formatTime(timeRemaining)}</div>
+          <div className="time-progress">
+            <div 
+              className="time-progress-bar"
+              style={{ 
+                width: `${(timeRemaining / (exam.duration * 60)) * 100}%` 
+              }}
+            ></div>
+          </div>
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 

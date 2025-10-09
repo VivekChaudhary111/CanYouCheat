@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ExamHeader from './components/ExamHeader';
+import ExamFooter from './components/ExamFooter';
 import QuestionDisplay from './components/QuestionDisplay';
-import NavigationPanel from './components/NavigationPanel';
 import WebcamMonitor from './components/WebcamMonitor';
 import SystemCheck from './components/SystemCheck';
 import SubmissionConfirm from './components/SubmissionConfirm';
@@ -56,6 +56,20 @@ const ExamTaking = () => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('📊 Exam data received:', data.exam);
+        console.log('📸 Questions with images:', data.exam.questions.filter(q => q.image).length);
+        
+        // Log each question's image status
+        data.exam.questions.forEach((q, index) => {
+          if (q.image) {
+            console.log(`🖼️ Question ${index + 1} has image:`, {
+              hasData: !!q.image.data,
+              altText: q.image.altText,
+              type: q.image.type
+            });
+          }
+        });
+        
         setExam(data.exam);
         
         // Initialize answers object
@@ -425,10 +439,9 @@ const ExamTaking = () => {
       <ExamHeader
         exam={exam}
         timeRemaining={timeRemaining}
-        formatTime={formatTime}
-        currentQuestion={currentQuestionIndex + 1}
+        currentQuestion={currentQuestionIndex}
         totalQuestions={exam.questions.length}
-        onSubmit={handleSubmitExam}
+        isMonitoring={isWebcamActive}
       />
 
       <div className="exam-content">
@@ -440,16 +453,6 @@ const ExamTaking = () => {
             answer={answers[currentQuestionIndex]}
             onAnswerChange={handleAnswerChange}
             totalQuestions={exam.questions.length}
-          />
-
-          {/* Navigation Panel */}
-          <NavigationPanel
-            questions={exam.questions}
-            answers={answers}
-            currentQuestionIndex={currentQuestionIndex}
-            onQuestionNavigation={handleQuestionNavigation}
-            onQuestionJump={handleQuestionJump}
-            onSubmit={handleSubmitExam}
           />
         </div>
 
@@ -463,6 +466,17 @@ const ExamTaking = () => {
           />
         </div>
       </div>
+
+      {/* Add ExamFooter here */}
+      <ExamFooter
+        currentQuestion={currentQuestionIndex}
+        totalQuestions={exam.questions.length}
+        onPrevious={() => handleQuestionNavigation('prev')}
+        onNext={() => handleQuestionNavigation('next')}
+        onSubmit={handleSubmitExam}
+        answeredQuestions={Object.values(answers).filter(answer => answer !== null && answer !== '')}
+        canSubmit={Object.values(answers).filter(answer => answer !== null && answer !== '').length > 0}
+      />
 
       {/* Submission Confirmation Modal */}
       {showSubmissionConfirm && (
