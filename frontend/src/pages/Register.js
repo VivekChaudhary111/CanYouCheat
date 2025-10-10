@@ -17,49 +17,40 @@ const Register = () => {
   const [error, setError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState('');
 
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (name === 'password') {
       checkPasswordStrength(value);
     }
   };
 
+  // Password strength checker
   const checkPasswordStrength = (password) => {
-    if (password.length === 0) {
-      setPasswordStrength('');
-      return;
-    }
-    
-    if (password.length < 6) {
-      setPasswordStrength('weak');
-    } else if (password.length < 10) {
-      setPasswordStrength('medium');
-    } else {
-      setPasswordStrength('strong');
-    }
+    if (!password) return setPasswordStrength('');
+    if (password.length < 6) return setPasswordStrength('weak');
+    if (password.length < 10) return setPasswordStrength('medium');
+    setPasswordStrength('strong');
   };
 
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError('Passwords do not match.');
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
     setLoading(true);
-
     try {
       const result = await register(
         formData.name,
@@ -67,14 +58,22 @@ const Register = () => {
         formData.password,
         formData.role
       );
-      
-      if (result.success) {
+
+      if (result?.success) {
         navigate('/login');
       } else {
-        setError(result.message || 'Registration failed');
+        setError(result?.message || 'Registration failed. Please try again.');
       }
-    } catch (error) {
-      setError('Network error. Please try again.');
+    } catch (err) {
+      console.error('Registration error:', err);
+
+      if (err.message?.includes('Failed to fetch')) {
+        setError('Cannot connect to server. Please check if backend is running.');
+      } else if (err.message?.includes('CORS')) {
+        setError('CORS error: please enable CORS on the backend.');
+      } else {
+        setError('Unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -99,17 +98,10 @@ const Register = () => {
             <p className="brand-description">
               Join the next generation of secure online examination
             </p>
-            
             <div className="features-list">
-              <div className="feature-item">
-                <span>Secure exam environment</span>
-              </div>
-              <div className="feature-item">
-                <span>Real-time monitoring</span>
-              </div>
-              <div className="feature-item">
-                <span>Comprehensive reporting</span>
-              </div>
+              <div className="feature-item"><span>Secure exam environment</span></div>
+              <div className="feature-item"><span>Real-time monitoring</span></div>
+              <div className="feature-item"><span>Comprehensive reporting</span></div>
             </div>
           </div>
         </div>
@@ -128,50 +120,38 @@ const Register = () => {
             )}
 
             <form onSubmit={handleSubmit} className="auth-form">
+              {/* Role selection */}
               <div className="form-group">
-                <label htmlFor="role" className="form-label">
-                  Account Type
-                </label>
-                <div className="role-selection">
-                  <div className="role-options">
-                    <label className={`role-option ${formData.role === 'student' ? 'active' : ''}`}>
+                <label className="form-label">Account Type</label>
+                <div className="role-options">
+                  {['student', 'instructor'].map((role) => (
+                    <label
+                      key={role}
+                      className={`role-option ${formData.role === role ? 'active' : ''}`}
+                    >
                       <input
                         type="radio"
                         name="role"
-                        value="student"
-                        checked={formData.role === 'student'}
+                        value={role}
+                        checked={formData.role === role}
                         onChange={handleChange}
                         disabled={loading}
                       />
                       <div className="role-content">
-                        <span className="role-title">Student</span>
+                        <span className="role-title">
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </span>
                       </div>
                     </label>
-                    
-                    <label className={`role-option ${formData.role === 'instructor' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="role"
-                        value="instructor"
-                        checked={formData.role === 'instructor'}
-                        onChange={handleChange}
-                        disabled={loading}
-                      />
-                      <div className="role-content">
-                        <span className="role-title">Instructor</span>
-                      </div>
-                    </label>
-                  </div>
+                  ))}
                 </div>
               </div>
 
+              {/* Name */}
               <div className="form-group">
-                <label htmlFor="name" className="form-label">
-                  Full Name
-                </label>
+                <label htmlFor="name" className="form-label">Full Name</label>
                 <input
                   id="name"
-                  type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
@@ -181,10 +161,9 @@ const Register = () => {
                 />
               </div>
 
+              {/* Email */}
               <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                  Email Address
-                </label>
+                <label htmlFor="email" className="form-label">Email Address</label>
                 <input
                   id="email"
                   type="email"
@@ -197,10 +176,9 @@ const Register = () => {
                 />
               </div>
 
+              {/* Password */}
               <div className="form-group">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
+                <label htmlFor="password" className="form-label">Password</label>
                 <input
                   id="password"
                   type="password"
@@ -218,10 +196,9 @@ const Register = () => {
                 )}
               </div>
 
+              {/* Confirm Password */}
               <div className="form-group">
-                <label htmlFor="confirmPassword" className="form-label">
-                  Confirm Password
-                </label>
+                <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                 <input
                   id="confirmPassword"
                   type="password"
@@ -234,11 +211,8 @@ const Register = () => {
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={`submit-btn ${loading ? 'loading' : ''}`}
-              >
+              {/* Submit */}
+              <button type="submit" disabled={loading} className={`submit-btn ${loading ? 'loading' : ''}`}>
                 {loading ? (
                   <>
                     <span className="loading-spinner"></span>
@@ -253,9 +227,7 @@ const Register = () => {
             <div className="card-footer">
               <p className="footer-text">
                 Already have an account?{' '}
-                <Link to="/login" className="footer-link">
-                  Sign in
-                </Link>
+                <Link to="/login" className="footer-link">Sign in</Link>
               </p>
             </div>
           </div>
