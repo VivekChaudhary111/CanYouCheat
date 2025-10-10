@@ -16,7 +16,34 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Initialize auth state from localStorage
+  // ✅ Register (moved INSIDE AuthProvider)
+  const register = async (name, email, password, role) => {
+    try {
+      setLoading(true);
+
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log('✅ Registration successful for:', data.user?.name || name);
+        return { success: true, message: data.message || 'Registered successfully' };
+      } else {
+        throw new Error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      return { success: false, message: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -25,12 +52,11 @@ export const AuthProvider = ({ children }) => {
 
         if (storedToken && storedUser) {
           const userData = JSON.parse(storedUser);
-          
-          // Verify token is still valid by checking with backend
+
           const response = await fetch('http://localhost:5000/api/auth/verify', {
             headers: {
-              'Authorization': `Bearer ${storedToken}`
-            }
+              Authorization: `Bearer ${storedToken}`,
+            },
           });
 
           if (response.ok) {
@@ -39,7 +65,6 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             console.log('🔄 Session restored for:', userData.name);
           } else {
-            // Token invalid, clear storage
             localStorage.removeItem('token');
             localStorage.removeItem('user');
           }
@@ -56,10 +81,11 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
+  // ✅ Login
   const login = async (email, password, role) => {
     try {
       setLoading(true);
-      
+
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,17 +95,12 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store in localStorage first
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Then update state - THIS IS THE KEY FIX
-        await new Promise(resolve => {
-          setToken(data.token);
-          setUser(data.user);
-          setIsAuthenticated(true);
-          resolve();
-        });
+        setToken(data.token);
+        setUser(data.user);
+        setIsAuthenticated(true);
 
         console.log('✅ Login successful for:', data.user.name);
         return { success: true, user: data.user };
@@ -94,6 +115,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ✅ Logout
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -103,6 +125,7 @@ export const AuthProvider = ({ children }) => {
     console.log('👋 User logged out');
   };
 
+  // ✅ Update user info
   const updateUser = (updatedUserData) => {
     const newUserData = { ...user, ...updatedUserData };
     setUser(newUserData);
@@ -110,7 +133,7 @@ export const AuthProvider = ({ children }) => {
     console.log('🔄 User data updated for:', newUserData.name);
   };
 
-  // Add computed role properties
+  // ✅ Computed role flags
   const isInstructor = user?.role === 'instructor';
   const isStudent = user?.role === 'student';
   const isAdmin = user?.role === 'admin';
@@ -125,12 +148,9 @@ export const AuthProvider = ({ children }) => {
     isAdmin,
     login,
     logout,
-    updateUser
+    register, // ✅ included here
+    updateUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
