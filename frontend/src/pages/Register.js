@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import StatusModal from '../components/StatusModal';
 import './Auth.css';
 
 const Register = () => {
@@ -16,6 +17,14 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState('');
+  
+  // Modal state
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: '',
+    title: '',
+    message: ''
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +32,9 @@ const Register = () => {
       ...formData,
       [name]: value
     });
+
+    // Clear error when user types
+    if (error) setError('');
 
     if (name === 'password') {
       checkPasswordStrength(value);
@@ -44,23 +56,80 @@ const Register = () => {
     }
   };
 
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      return 'Full name is required';
+    }
+
+    if (!formData.email.trim()) {
+      return 'Email is required';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      return 'Password is required';
+    }
+
+    if (formData.password.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      return 'Passwords do not match';
+    }
+
+    return null;
+  };
+
+  const showModal = (type, title, message) => {
+    setModal({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+  };
+
+  const closeModal = () => {
+    setModal({
+      isOpen: false,
+      type: '',
+      title: '',
+      message: ''
+    });
+  };
+
+  const handleModalClose = () => {
+    closeModal();
+    if (modal.type === 'success') {
+      navigate('/login');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      showModal(
+        'error',
+        'Registration Failed',
+        validationError
+      );
       return;
     }
 
     setLoading(true);
 
     try {
+      console.log('Submitting registration form...');
+      
       const result = await register(
         formData.name,
         formData.email,
@@ -68,16 +137,48 @@ const Register = () => {
         formData.role
       );
       
+      console.log('Registration result:', result);
+
       if (result.success) {
-        navigate('/login');
+        // Clear form
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          role: 'student'
+        });
+        setPasswordStrength('');
+
+        // Show success modal
+        showModal(
+          'success',
+          'Account Created Successfully',
+          'Your account has been created. You will be redirected to the login page to sign in.'
+        );
       } else {
-        setError(result.message || 'Registration failed');
+        // Show error modal
+        showModal(
+          'error',
+          'Registration Failed',
+          result.message || 'Unable to create account. Please check your information and try again.'
+        );
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      console.error('Unexpected registration error:', error);
+      showModal(
+        'error',
+        'Network Error',
+        'Unable to connect to the server. Please check your internet connection and try again.'
+      );
     } finally {
       setLoading(false);
     }
+  };
+
+  const goToLogin = () => {
+    closeModal();
+    navigate('/login');
   };
 
   return (
@@ -120,12 +221,6 @@ const Register = () => {
               <h2 className="card-title">Create Account</h2>
               <p className="card-subtitle">Join our AI proctoring platform</p>
             </div>
-
-            {error && (
-              <div className="error-message" role="alert">
-                <span>{error}</span>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
@@ -178,6 +273,7 @@ const Register = () => {
                   className="form-input"
                   placeholder="Enter your full name"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -194,6 +290,7 @@ const Register = () => {
                   className="form-input"
                   placeholder="Enter your email"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -210,6 +307,7 @@ const Register = () => {
                   className="form-input"
                   placeholder="Create a password"
                   required
+                  disabled={loading}
                 />
                 {passwordStrength && (
                   <div className={`password-strength ${passwordStrength}`}>
@@ -231,6 +329,7 @@ const Register = () => {
                   className="form-input"
                   placeholder="Confirm your password"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -261,6 +360,28 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      {/* Status Modal */}
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={handleModalClose}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        autoClose={modal.type === 'success'}
+        autoCloseDelay={4000}
+        actionButton={
+          modal.type === 'success' ? (
+            <button 
+              onClick={goToLogin}
+              className="submit-btn"
+              style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+            >
+              Go to Login
+            </button>
+          ) : null
+        }
+      />
     </div>
   );
 };

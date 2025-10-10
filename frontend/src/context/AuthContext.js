@@ -55,7 +55,51 @@ export const AuthProvider = ({ children }) => {
 
     initializeAuth();
   }, []);
+  // Register function
+  const register = async (name, email, password, role) => {
+    try {
+      console.log('Attempting registration with:', { name, email, role });
+      
+      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role
+        }),
+      });
 
+      console.log('Registration response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Registration failed:', errorData);
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Registration successful:', data);
+
+      return {
+        success: true,
+        message: data.message || 'Registration successful',
+        data
+      };
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      // Return structured error response
+      return {
+        success: false,
+        message: error.message || 'Registration failed. Please try again.',
+        error: error
+      };
+    }
+  };
   const login = async (email, password, role) => {
     try {
       setLoading(true);
@@ -124,6 +168,7 @@ export const AuthProvider = ({ children }) => {
     isStudent,
     isAdmin,
     login,
+    register,
     logout,
     updateUser
   };
