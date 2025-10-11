@@ -2,6 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
+
+
+import LandingPage from './pages/LandingPage';  // added landing page
+
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -30,7 +35,8 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/exams" element={<ExamList />} />
               {/* Fixed route path to match ExamList navigation */}
               <Route path="/exams/:examId/take" element={<ExamTaking />} />
