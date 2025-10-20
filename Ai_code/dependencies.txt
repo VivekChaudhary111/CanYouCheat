@@ -1,4 +1,0 @@
-fastapi[all]
-opencv-python
-numpy
-mediapipe
