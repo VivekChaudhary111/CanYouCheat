@@ -41,6 +41,7 @@ const Register = () => {
     }
   };
 
+  // Password strength checker
   const checkPasswordStrength = (password) => {
     if (password.length === 0) {
       setPasswordStrength('');
@@ -110,6 +111,7 @@ const Register = () => {
     }
   };
 
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -126,7 +128,6 @@ const Register = () => {
     }
 
     setLoading(true);
-
     try {
       console.log('Submitting registration form...');
       
@@ -200,17 +201,10 @@ const Register = () => {
             <p className="brand-description">
               Join the next generation of secure online examination
             </p>
-            
             <div className="features-list">
-              <div className="feature-item">
-                <span>Secure exam environment</span>
-              </div>
-              <div className="feature-item">
-                <span>Real-time monitoring</span>
-              </div>
-              <div className="feature-item">
-                <span>Comprehensive reporting</span>
-              </div>
+              <div className="feature-item"><span>Secure exam environment</span></div>
+              <div className="feature-item"><span>Real-time monitoring</span></div>
+              <div className="feature-item"><span>Comprehensive reporting</span></div>
             </div>
           </div>
         </div>
@@ -223,50 +217,38 @@ const Register = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="auth-form">
+              {/* Role selection */}
               <div className="form-group">
-                <label htmlFor="role" className="form-label">
-                  Account Type
-                </label>
-                <div className="role-selection">
-                  <div className="role-options">
-                    <label className={`role-option ${formData.role === 'student' ? 'active' : ''}`}>
+                <label className="form-label">Account Type</label>
+                <div className="role-options">
+                  {['student', 'instructor'].map((role) => (
+                    <label
+                      key={role}
+                      className={`role-option ${formData.role === role ? 'active' : ''}`}
+                    >
                       <input
                         type="radio"
                         name="role"
-                        value="student"
-                        checked={formData.role === 'student'}
+                        value={role}
+                        checked={formData.role === role}
                         onChange={handleChange}
                         disabled={loading}
                       />
                       <div className="role-content">
-                        <span className="role-title">Student</span>
+                        <span className="role-title">
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </span>
                       </div>
                     </label>
-                    
-                    <label className={`role-option ${formData.role === 'instructor' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="role"
-                        value="instructor"
-                        checked={formData.role === 'instructor'}
-                        onChange={handleChange}
-                        disabled={loading}
-                      />
-                      <div className="role-content">
-                        <span className="role-title">Instructor</span>
-                      </div>
-                    </label>
-                  </div>
+                  ))}
                 </div>
               </div>
 
+              {/* Name */}
               <div className="form-group">
-                <label htmlFor="name" className="form-label">
-                  Full Name
-                </label>
+                <label htmlFor="name" className="form-label">Full Name</label>
                 <input
                   id="name"
-                  type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
@@ -277,10 +259,9 @@ const Register = () => {
                 />
               </div>
 
+              {/* Email */}
               <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                  Email Address
-                </label>
+                <label htmlFor="email" className="form-label">Email Address</label>
                 <input
                   id="email"
                   type="email"
@@ -294,10 +275,9 @@ const Register = () => {
                 />
               </div>
 
+              {/* Password */}
               <div className="form-group">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
+                <label htmlFor="password" className="form-label">Password</label>
                 <input
                   id="password"
                   type="password"
@@ -316,10 +296,9 @@ const Register = () => {
                 )}
               </div>
 
+              {/* Confirm Password */}
               <div className="form-group">
-                <label htmlFor="confirmPassword" className="form-label">
-                  Confirm Password
-                </label>
+                <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                 <input
                   id="confirmPassword"
                   type="password"
@@ -333,11 +312,8 @@ const Register = () => {
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={`submit-btn ${loading ? 'loading' : ''}`}
-              >
+              {/* Submit */}
+              <button type="submit" disabled={loading} className={`submit-btn ${loading ? 'loading' : ''}`}>
                 {loading ? (
                   <>
                     <span className="loading-spinner"></span>
@@ -352,9 +328,7 @@ const Register = () => {
             <div className="card-footer">
               <p className="footer-text">
                 Already have an account?{' '}
-                <Link to="/login" className="footer-link">
-                  Sign in
-                </Link>
+                <Link to="/login" className="footer-link">Sign in</Link>
               </p>
             </div>
           </div>
