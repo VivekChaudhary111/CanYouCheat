@@ -10,7 +10,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
+    "react-webcam": "^7.2.0",
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
@@ -39,7 +40,10 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^9.37.0",
+    "@babel/core": "^7.28.5",
+    "@babel/eslint-parser": "^7.28.5",
+    "eslint": "^8.57.0",
+    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react": "^7.37.5"
   }
 }
