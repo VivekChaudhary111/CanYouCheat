@@ -163,7 +163,7 @@ const QuestionDisplay = ({
       <div className="question-header">
         <div className="question-progress">
           <div className="progress-indicator">
-            <span className="current-question">{questionIndex + 1}</span>
+            <span className="current-question" >{questionIndex + 1}</span>
             <span className="separator">of</span>
             <span className="total-questions">{totalQuestions}</span>
           </div>
@@ -175,7 +175,7 @@ const QuestionDisplay = ({
           </div>
         </div>
         <div className="question-points">
-          <span className="points-label">Points:</span>
+          <span className="points-label">Marks:</span>
           <span className="points-value">{question.marks}</span>
         </div>
       </div>
@@ -188,8 +188,8 @@ const QuestionDisplay = ({
           {/* Time limit indicator if present */}
           {question.timeLimit && (
             <div className="time-limit-notice">
-              <span className="time-icon">Time:</span>
-              Suggested time: ${question.timeLimit === 60 ? 'No time limit' : question.timeLimit + ' seconds'} 
+              <span className="time-icon">Suggested time:</span>
+              {question.timeLimit === 60 ? 'No time limit' : question.timeLimit + ' seconds'} 
             </div>
           )}
         </div>
@@ -253,7 +253,7 @@ const QuestionDisplay = ({
             </div>
           ) : (
             <div className="status-indicator not-answered">
-              <span className="status-icon">Pending</span>
+              <span className="status-icon">Pending</span> <br/>
               <span>Not answered yet</span>
             </div>
           )}
@@ -269,7 +269,7 @@ const QuestionDisplay = ({
               onClick={closeImageModal}
               type="button"
             >
-              Close
+              X
             </button>
             <img
               src={question.image.data}
