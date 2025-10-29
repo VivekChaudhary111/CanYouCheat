@@ -4,6 +4,81 @@ const ExamSubmission = require('../models/ExamSubmission');
 const User = require('../models/User');
 
 console.log('🔧 Loading AI Proctoring Exam Controller...');
+// --- ADD THIS ENTIRE FUNCTION ---
+const verifyIdentity = async (req, res) => {
+  console.log(`🔵 Received identity verification request for exam: ${req.params.examId} by user: ${req.user.id}`);
+  try {
+    const studentId = req.user.id; // Get student ID from the 'auth' middleware
+    const { live_image_base_64 } = req.body; // Get the live image sent from React
+
+    // --- Input Validation ---
+    if (!live_image_base_64) {
+      console.log('❌ Verification failed: Missing live image.');
+      return res.status(400).json({ success: false, message: 'Live image is required.' });
+    }
+
+    // --- 1. Fetch Student's Reference Image from Database ---
+    console.log(`🔍 Fetching reference image for user ID: ${studentId}`);
+    const student = await User.findById(studentId).select('referenceImage'); // Only select the needed field
+
+    if (!student || !student.referenceImage) {
+      console.log(`❌ Verification failed: Reference image not found for user ID: ${studentId}`);
+      return res.status(404).json({ success: false, message: 'Reference image not found for this user. Please ensure you completed registration correctly.' });
+    }
+    const reference_image_base_64 = student.referenceImage;
+    console.log('✅ Reference image fetched successfully.');
+
+    // --- 2. Call Python AI Service ---
+    const aiServiceUrl = 'http://localhost:8000/verify_face'; // Your Python service URL
+    console.log(`🧠 Sending images to AI service at ${aiServiceUrl}`);
+
+    const aiResponse = await axios.post(aiServiceUrl, {
+      live_image_base_64,       // Send the live image from React
+      reference_image_base_64 // Send the reference image from DB
+    }, {
+      timeout: 15000 // Increase timeout to 15 seconds for face verification
+    });
+
+    // --- 3. Process AI Response ---
+    const verificationResult = aiResponse.data;
+    console.log('✅ Received verification result from AI:', verificationResult);
+
+    // Basic check on the response structure
+    if (typeof verificationResult.verified !== 'boolean') {
+      throw new Error('Invalid response format from AI service.');
+    }
+
+    // --- 4. Send Result Back to React ---
+    res.status(200).json({
+      success: true,
+      verified: verificationResult.verified, // The main true/false result
+      details: verificationResult // Optional: Send distance, model, etc., back if needed
+    });
+
+  } catch (error) {
+    console.error('💥 Error during face verification process:', error.response?.data || error.message);
+
+    let statusCode = 500;
+    let message = 'An unexpected error occurred during face verification.';
+
+    if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        message = 'The AI verification service timed out. Please try again.';
+        statusCode = 504; // Gateway Timeout
+    } else if (error.response) {
+        // Error from the AI service itself
+        message = `Verification failed: ${error.response.data?.error || error.response.data?.detail || 'AI service error'}`;
+        statusCode = error.response.status >= 400 ? error.response.status : 500; // Use AI service status if valid error
+    } else if (error.message.includes('Reference image not found')) {
+        statusCode = 404;
+        message = error.message;
+    } else if (error.message.includes('Invalid response format')) {
+         message = error.message; // Keep the specific message
+    }
+
+    res.status(statusCode).json({ success: false, message: message });
+  }
+};
+// --- END NEW FUNCTION ---
 
 // Get all exams for AI proctoring system with proper student assignment logic
 const getExams = async (req, res) => {
@@ -1366,7 +1441,8 @@ module.exports = {
   startExamSession,
   submitExam,
   autoSaveAnswers,
-  recordProctoringData
+  recordProctoringData,
+  verifyIdentity
 };
 
 console.log('✅ AI Proctoring Exam Controller loaded with behavior analysis capabilities');

@@ -2,10 +2,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-# Corrected schema import if file is schema.py
 from .schema import ImageRequest, ProctorFlags, FaceVerificationRequest, FaceVerificationResponse
 from .services import ProctoringService
-# Make sure this points to the new OpenCV LBPH verifier
 from .models.face_verifier import FaceVerifier
 from .core.utils import base64_to_image
 import os
@@ -18,20 +16,17 @@ async def lifespan(app: FastAPI):
     """Load AI models on startup."""
     print("AI Service: Lifespan startup...")
 
-    # --- Load Proctoring Models (MediaPipe/YOLOv8) ---
+    # --- Load Proctoring Models (MediaPipe) ---
     custom_model_path = './weights/best.pt'
     object_model_path = custom_model_path if os.path.exists(custom_model_path) else 'yolov8n.pt'
     print(f"Using YOLO model: {object_model_path}")
     try:
-        # Assuming ProctoringService uses MediaPipe as it was working
         app_state["proctoring_service"] = ProctoringService(object_model_path=object_model_path)
         print("Proctoring Service loaded successfully (MediaPipe/YOLOv8).")
     except Exception as e:
         print(f"FATAL ERROR loading Proctoring Service: {e}")
 
-    # --- Load Face Verification Model (OpenCV LBPH) ---
     try:
-        # Initialize the OpenCV FaceVerifier
         app_state["face_verifier"] = FaceVerifier()
         print("Face Verifier loaded successfully (using OpenCV LBPH).")
     except Exception as e:

@@ -2,12 +2,11 @@
 import numpy as np
 import cv2
 from .schema import ProctorFlags
-from .models.face import FaceProcessor # Uses MediaPipe now
+from .models.face import FaceProcessor 
 from .models.object import ObjectDetector
 
 class ProctoringService:
     def __init__(self, object_model_path: str):
-        """Initializes all the AI model processors."""
         self.face_processor = FaceProcessor()
         self.object_detector = ObjectDetector(model_path=object_model_path)
         print("ProctoringService initialized with MediaPipe FaceProcessor.")
@@ -26,10 +25,10 @@ class ProctoringService:
                 phone_detected=False,
                 book_detected=False,
                 is_looking_away=False,
-                face_out_of_bounds=True, # <-- Add default for error case
+                face_out_of_bounds=True,
             )
         
-        # 1. Run face analysis (now includes face_out_of_bounds from MediaPipe)
+        # 1. Run face analysis
         face_flags = self.face_processor.analyze(image_rgb)
         
         # 2. Run object analysis

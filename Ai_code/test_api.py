@@ -5,7 +5,7 @@ import os
 
 # --- Configuration ---
 API_URL = "http://localhost:8000/proctor"
-IMAGE_PATH = r"c:\Users\Gaurav Kumar\Documents\photo.jpg" # <-- IMPORTANT: Change this to your image file name
+IMAGE_PATH = r"c:\Users\Gaurav Kumar\Downloads\tom-hermans-9BoqXzEeQqM-unsplash.jpg" # <-- IMPORTANT: Change this to your image file name
 
 # --- Function to encode image to base64 ---
 def image_to_base64(filepath):

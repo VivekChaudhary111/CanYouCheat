@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password, role) => {
+    // ... (your existing login function - no changes)
     try {
       setLoading(true);
       
@@ -69,11 +70,9 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store in localStorage first
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Then update state - THIS IS THE KEY FIX
         await new Promise(resolve => {
           setToken(data.token);
           setUser(data.user);
@@ -94,7 +93,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // --- NEW: Register Function ---
+  const register = async (name, email, password, role, live_photo_base64) => {
+    try {
+      // NOTE: We don't set global loading(true) here, 
+      // because the Register.js component handles its own button loading state.
+
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role,
+          live_photo_base64 // <-- Send the photo to the backend
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log('✅ Registration successful for:', name);
+        return { success: true };
+      } else {
+        throw new Error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      return { success: false, message: error.message };
+    }
+  };
+
   const logout = () => {
+    // ... (your existing logout function - no changes)
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);
@@ -104,6 +136,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (updatedUserData) => {
+    // ... (your existing updateUser function - no changes)
     const newUserData = { ...user, ...updatedUserData };
     setUser(newUserData);
     localStorage.setItem('user', JSON.stringify(newUserData));
@@ -124,6 +157,7 @@ export const AuthProvider = ({ children }) => {
     isStudent,
     isAdmin,
     login,
+    register, // <-- NEW: Export the register function
     logout,
     updateUser
   };
