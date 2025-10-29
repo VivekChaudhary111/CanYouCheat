@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Webcam from "react-webcam";
 import "./Auth.css";
 
 const Login = () => {
@@ -13,11 +12,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  // Webcam state
-  const [cameraOpen, setCameraOpen] = useState(false);
-  const [capturedImage, setCapturedImage] = useState(null);
-  const webcamRef = useRef(null);
 
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -35,35 +29,16 @@ const Login = () => {
     });
   };
 
-  // Capture photo
-  const capturePhoto = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setCapturedImage(imageSrc);
-  };
-
-  // Retake photo
-  const retakePhoto = () => {
-    setCapturedImage(null);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    // If student role, open camera before login
-    if (formData.role === "student" && !capturedImage) {
-      setCameraOpen(true);
-      return;
-    }
-
     setLoading(true);
 
     try {
       const result = await login(
         formData.email,
         formData.password,
-        formData.role,
-        capturedImage // Send captured image to backend
+        formData.role
       );
 
       if (!result.success) {
@@ -114,161 +89,110 @@ const Login = () => {
               </div>
             )}
 
-            {/* Camera UI */}
-            {cameraOpen && formData.role === "student" && (
-              <div className="camera-container">
-                {!capturedImage ? (
-                  <>
-                    <Webcam
-                      ref={webcamRef}
-                      audio={false}
-                      screenshotFormat="image/jpeg"
-                      videoConstraints={{ facingMode: "user" }}
-                      className="webcam-view"
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="form-group">
+                <label htmlFor="role" className="form-label">
+                  Account Type
+                </label>
+                <div className="role-options">
+                  <label
+                    className={`role-option ${
+                      formData.role === "student" ? "active" : ""
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="student"
+                      checked={formData.role === "student"}
+                      onChange={handleChange}
+                      disabled={loading}
                     />
-                    <button
-                      type="button"
-                      className="capture-btn"
-                      onClick={capturePhoto}
-                    >
-                      Capture Photo
-                    </button>
+                    <div className="role-content">
+                      <span className="role-title">Student</span>
+                    </div>
+                  </label>
+
+                  <label
+                    className={`role-option ${
+                      formData.role === "instructor" ? "active" : ""
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="instructor"
+                      checked={formData.role === "instructor"}
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+                    <div className="role-content">
+                      <span className="role-title">Instructor</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">
+                  Email Address
+                </label>
+                <div className="input-wrapper">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your email"
+                    className="form-input"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password" className="form-label">
+                  Password
+                </label>
+                <div className="input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your password"
+                    className="form-input"
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className={`submit-btn ${loading ? "loading" : ""}`}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    <span>Signing In...</span>
                   </>
                 ) : (
-                  <div className="preview-section">
-                    <img
-                      src={capturedImage}
-                      alt="Captured face"
-                      className="captured-img"
-                    />
-                    <div className="photo-actions">
-                      <button
-                        type="button"
-                        className="retake-btn"
-                        onClick={retakePhoto}
-                      >
-                        Retake
-                      </button>
-                      <button
-                        type="submit"
-                        className="confirm-btn"
-                        onClick={handleSubmit}
-                      >
-                        Continue to Login
-                      </button>
-                    </div>
-                  </div>
+                  <span>Sign In</span>
                 )}
-              </div>
-            )}
-
-            {/* Hide login form when camera open */}
-            {!cameraOpen && (
-              <form onSubmit={handleSubmit} className="auth-form">
-                <div className="form-group">
-                  <label htmlFor="role" className="form-label">
-                    Account Type
-                  </label>
-                  <div className="role-options">
-                    <label
-                      className={`role-option ${
-                        formData.role === "student" ? "active" : ""
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="role"
-                        value="student"
-                        checked={formData.role === "student"}
-                        onChange={handleChange}
-                        disabled={loading}
-                      />
-                      <div className="role-content">
-                        <span className="role-title">Student</span>
-                      </div>
-                    </label>
-
-                    <label
-                      className={`role-option ${
-                        formData.role === "instructor" ? "active" : ""
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="role"
-                        value="instructor"
-                        checked={formData.role === "instructor"}
-                        onChange={handleChange}
-                        disabled={loading}
-                      />
-                      <div className="role-content">
-                        <span className="role-title">Instructor</span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">
-                    Email Address
-                  </label>
-                  <div className="input-wrapper">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="Enter your email"
-                      className="form-input"
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="password" className="form-label">
-                    Password
-                  </label>
-                  <div className="input-wrapper">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      placeholder="Enter your password"
-                      className="form-input"
-                      disabled={loading}
-                    />
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? "Hide" : "Show"}
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className={`submit-btn ${loading ? "loading" : ""}`}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="loading-spinner"></span>
-                      <span>Signing In...</span>
-                    </>
-                  ) : (
-                    <span>Sign In</span>
-                  )}
-                </button>
-              </form>
-            )}
+              </button>
+            </form>
 
             <div className="card-footer">
               <p className="footer-text">
