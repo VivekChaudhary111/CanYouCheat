@@ -65,11 +65,10 @@ const examSchema = new mongoose.Schema({
   },
   // ✅ Fixed: Explicitly disable _id for questions subdocuments
   questions: [{
-    _id: false, // This prevents Mongoose from auto-generating _id
+    _id: false, // Disable automatic _id generation for questions
     questionText: {
       type: String,
-      required: true,
-      trim: true
+      required: true
     },
     questionType: {
       type: String,
@@ -77,7 +76,7 @@ const examSchema = new mongoose.Schema({
       required: true
     },
     options: [{
-      _id: false, // Also disable _id for options
+      _id: false,
       text: String,
       isCorrect: Boolean
     }],
@@ -88,8 +87,28 @@ const examSchema = new mongoose.Schema({
       min: 1
     },
     timeLimit: {
-      type: Number, // in seconds
+      type: Number,
       default: null
+    },
+    // IMPORTANT: Image field structure
+    image: {
+      data: {
+        type: String, // Base64 string
+        required: false
+      },
+      name: {
+        type: String,
+        required: false
+      },
+      type: {
+        type: String,
+        required: false
+      },
+      altText: {
+        type: String,
+        required: false,
+        default: ''
+      }
     }
   }],
   createdBy: {

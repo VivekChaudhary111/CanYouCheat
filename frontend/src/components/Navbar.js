@@ -52,12 +52,17 @@ const Navbar = () => {
       <nav className="navbar">
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
-            🔒 CanYouCheat
-            <span className="logo-subtitle">AI Proctoring</span>
+            <div className="logo-icon">
+                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+              </div>
+            <div className="logo-text">
+              <span className="logo-title">CanYouCheat</span>
+              <span className="logo-subtitle">AI Proctoring</span>
+            </div>
           </Link>
           <div className="navbar-menu">
             <Link to="/login" className="navbar-link">Login</Link>
-            <Link to="/register" className="navbar-link">Register</Link>
+            <Link to="/register" className="navbar-link register-btn">Register</Link>
           </div>
         </div>
       </nav>
@@ -69,21 +74,14 @@ const Navbar = () => {
     return (
       <nav className="navbar">
         <div className="navbar-container">
-          <div className="navbar-left">
-            <div className="profile-dropdown">
-              <div className="profile-button loading">
-                <div className="profile-avatar loading"></div>
-                <div className="profile-info">
-                  <span className="profile-name">Loading...</span>
-                  <span className="profile-role">---</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <Link to="/dashboard" className="navbar-logo">
-            🔒 CanYouCheat
-            <span className="logo-subtitle">AI Proctoring System</span>
+            <div className="logo-icon">
+                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+            </div>
+            <div className="logo-text">
+              <span className="logo-title">CanYouCheat</span>
+              <span className="logo-subtitle">AI Proctoring System</span>
+            </div>
           </Link>
 
           <div className="navbar-menu">
@@ -94,10 +92,9 @@ const Navbar = () => {
     );
   }
 
-  // Profile menu items (only show when user data is loaded)
+  // Profile menu items
   const profileMenuItems = [
     {
-      icon: '👤',
       label: 'View Profile',
       action: () => {
         navigate('/profile');
@@ -105,7 +102,6 @@ const Navbar = () => {
       }
     },
     {
-      icon: '🔧',
       label: 'Account Settings',
       action: () => {
         navigate('/settings');
@@ -113,7 +109,6 @@ const Navbar = () => {
       }
     },
     {
-      icon: '🔑',
       label: 'Change Password',
       action: () => {
         navigate('/change-password');
@@ -122,7 +117,6 @@ const Navbar = () => {
     },
     ...(user?.role === 'instructor' ? [
       {
-        icon: '📊',
         label: 'Analytics Dashboard',
         action: () => {
           navigate('/analytics');
@@ -130,7 +124,6 @@ const Navbar = () => {
         }
       },
       {
-        icon: '⚙️',
         label: 'Proctoring Settings',
         action: () => {
           navigate('/proctoring-settings');
@@ -140,7 +133,6 @@ const Navbar = () => {
     ] : []),
     ...(user?.role === 'student' ? [
       {
-        icon: '📈',
         label: 'Performance History',
         action: () => {
           navigate('/performance');
@@ -148,7 +140,6 @@ const Navbar = () => {
         }
       },
       {
-        icon: '🔍',
         label: 'System Check',
         action: () => {
           navigate('/system-check');
@@ -157,26 +148,57 @@ const Navbar = () => {
       }
     ] : []),
     {
-      icon: '❓',
       label: 'Help & Support',
       action: () => {
         navigate('/help');
         setIsProfileOpen(false);
       }
-    },
-    {
-      icon: '🚪',
-      label: 'Logout',
-      action: handleLogout,
-      className: 'logout-item'
     }
   ];
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Profile Dropdown - Left Side */}
-        <div className="navbar-left">
+        {/* Logo - Left Side */}
+        <Link to="/dashboard" className="navbar-logo">
+          <div className="logo-icon">
+            <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+          </div>
+          <div className="logo-text">
+            <span className="logo-title">CanYouCheat</span>
+            <span className="logo-subtitle">AI Proctoring System</span>
+          </div>
+        </Link>
+
+        {/* Center Navigation Links */}
+        <div className="navbar-menu">
+          <Link to="/dashboard" className="navbar-link">
+            Dashboard
+          </Link>
+          <Link to="/exams" className="navbar-link">
+            Exams
+          </Link>
+          {user?.role === 'instructor' && (
+            <>
+              <Link to="/create-exam" className="navbar-link">
+                Create Exam
+              </Link>
+              <Link to="/proctoring" className="navbar-link">
+                Proctoring
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Right Side - AI Status & Profile */}
+        <div className="navbar-right">
+          {/* AI Proctoring Status Indicator */}
+          <div className="ai-status-indicator">
+            <div className="status-dot active"></div>
+            <span className="status-text">AI Active</span>
+          </div>
+
+          {/* Profile Dropdown */}
           <div className="profile-dropdown" ref={profileRef}>
             <button 
               className="profile-button"
@@ -196,7 +218,9 @@ const Navbar = () => {
                 </span>
               </div>
               <div className={`profile-arrow ${isProfileOpen ? 'open' : ''}`}>
-                ▼
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
             </button>
             
@@ -224,52 +248,24 @@ const Navbar = () => {
                   {profileMenuItems.map((item, index) => (
                     <button
                       key={index}
-                      className={`profile-menu-item ${item.className || ''}`}
+                      className="profile-menu-item"
                       onClick={item.action}
                     >
-                      <span className="menu-item-icon">{item.icon}</span>
                       <span className="menu-item-label">{item.label}</span>
                     </button>
                   ))}
+                  
+                  <div className="profile-menu-divider"></div>
+                  
+                  <button
+                    className="profile-menu-item logout-item"
+                    onClick={handleLogout}
+                  >
+                    <span className="menu-item-label">Logout</span>
+                  </button>
                 </div>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Center Logo */}
-        <Link to="/dashboard" className="navbar-logo">
-          🔒 CanYouCheat
-          <span className="logo-subtitle">AI Proctoring System</span>
-        </Link>
-
-        {/* Navigation Links - Right Side */}
-        <div className="navbar-menu">
-          <Link to="/dashboard" className="navbar-link">
-            <span className="link-icon">🏠</span>
-            Dashboard
-          </Link>
-          <Link to="/exams" className="navbar-link">
-            <span className="link-icon">📋</span>
-            Exams
-          </Link>
-          {user?.role === 'instructor' && (
-            <>
-              <Link to="/create-exam" className="navbar-link">
-                <span className="link-icon">➕</span>
-                Create Exam
-              </Link>
-              <Link to="/proctoring" className="navbar-link">
-                <span className="link-icon">👁️</span>
-                Proctoring
-              </Link>
-            </>
-          )}
-          
-          {/* AI Proctoring Status Indicator */}
-          <div className="ai-status-indicator">
-            <div className="status-dot active"></div>
-            <span className="status-text">AI Active</span>
           </div>
         </div>
       </div>

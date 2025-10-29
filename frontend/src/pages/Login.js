@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import StatusModal from '../components/StatusModal';
 import './Auth.css';
 
 const Login = () => {
@@ -12,35 +13,124 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [preventAutoRedirect, setPreventAutoRedirect] = useState(false); // Add this flag
+  
+  // Modal state
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: '',
+    title: '',
+    message: ''
+  });
 
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect when authentication state changes
+  // Modified useEffect to respect the prevent redirect flag
   useEffect(() => {
-    if (isAuthenticated && user) {
-      console.log('🎯 User authenticated, redirecting:', user.name);
+    // Only redirect if user is authenticated AND we're not preventing auto redirect
+    if (isAuthenticated && user && !preventAutoRedirect) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, preventAutoRedirect]);
+
+  const showModal = (type, title, message) => {
+    setModal({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+  };
+
+  const closeModal = () => {
+    setModal({
+      isOpen: false,
+      type: '',
+      title: '',
+      message: ''
+    });
+  };
+
+  const handleModalClose = () => {
+    closeModal();
+    if (modal.type === 'success') {
+      // Reset the prevent flag and then navigate
+      setPreventAutoRedirect(false);
+      navigate('/dashboard');
+    }
+  };
+
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      return 'Email is required';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      return 'Password is required';
+    }
+
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      showModal(
+        'error',
+        'Login Failed',
+        validationError
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log('Attempting login...');
+      
+      // Prevent automatic redirect when login succeeds
+      setPreventAutoRedirect(true);
+      
       const result = await login(formData.email, formData.password, formData.role);
       
+      console.log('Login result:', result);
+
       if (result.success) {
-        console.log('✅ Login completed for:', result.user.name);
-        // Navigation will happen automatically via useEffect
+        // Show success modal first, then redirect will happen on modal close
+        showModal(
+          'success',
+          'Login Successful',
+          `Welcome back! You are now signed in to your ${formData.role} dashboard.`
+        );
       } else {
-        setError(result.message || 'Login failed');
+        // Reset prevent flag on error
+        setPreventAutoRedirect(false);
+        // Show error modal
+        showModal(
+          'error',
+          'Login Failed',
+          result.message || 'Invalid credentials. Please check your email and password and try again.'
+        );
       }
     } catch (error) {
-      console.error('❌ Login error:', error);
-      setError('Network error. Please try again.');
+      console.error('Unexpected login error:', error);
+      // Reset prevent flag on error
+      setPreventAutoRedirect(false);
+      showModal(
+        'error',
+        'Network Error',
+        'Unable to connect to the server. Please check your internet connection and try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -51,94 +141,101 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+
+    // Clear error when user types
+    if (error) setError('');
+  };
+
+  const goToDashboard = () => {
+    closeModal();
+    setPreventAutoRedirect(false);
+    navigate('/dashboard');
   };
 
   return (
     <div className="auth-page">
-      {/* Animated Background */}
       <div className="auth-background">
-        <div className="floating-shapes">
-          <div className="shape shape-1"></div>
-          <div className="shape shape-2"></div>
-          <div className="shape shape-3"></div>
-          <div className="shape shape-4"></div>
-          <div className="shape shape-5"></div>
-          <div className="shape shape-6"></div>
-        </div>
         <div className="gradient-overlay"></div>
       </div>
 
-      {/* Main Content */}
       <div className="auth-container">
-        {/* Left Side - Branding */}
         <div className="auth-branding">
           <div className="brand-content">
             <div className="brand-logo">
-              <div className="logo-icon">🔒</div>
+              <div className="logo-icon">
+                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+              </div>
               <h1 className="brand-title">CanYouCheat</h1>
             </div>
-            <h2 className="brand-subtitle">AI-Enhanced Exam Proctoring System</h2>
+            <h2 className="brand-subtitle">AI-Enhanced Exam Proctoring</h2>
             <p className="brand-description">
-              Advanced artificial intelligence monitors and analyzes test-taker behavior 
-              to ensure academic integrity in remote examinations.
+              Advanced AI monitoring for secure remote examinations
             </p>
             
             <div className="features-list">
               <div className="feature-item">
-                <span className="feature-icon">🎯</span>
                 <span>Real-time behavior analysis</span>
               </div>
               <div className="feature-item">
-                <span className="feature-icon">👁️</span>
-                <span>Advanced eye tracking technology</span>
+                <span>Eye tracking technology</span>
               </div>
               <div className="feature-item">
-                <span className="feature-icon">🤖</span>
                 <span>AI-powered risk assessment</span>
               </div>
               <div className="feature-item">
-                <span className="feature-icon">🔊</span>
                 <span>Audio anomaly detection</span>
-              </div>
-            </div>
-
-            <div className="security-badges">
-              <div className="badge">
-                <span className="badge-icon">🛡️</span>
-                <span>Secure</span>
-              </div>
-              <div className="badge">
-                <span className="badge-icon">⚡</span>
-                <span>Fast</span>
-              </div>
-              <div className="badge">
-                <span className="badge-icon">🎯</span>
-                <span>Accurate</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side - Login Form */}
         <div className="auth-form-container">
           <div className="auth-card">
             <div className="card-header">
               <h2 className="card-title">Welcome Back</h2>
-              <p className="card-subtitle">Sign in to access your AI proctoring dashboard</p>
+              <p className="card-subtitle">Sign in to access your dashboard</p>
             </div>
 
-            {error && (
-              <div className="error-message">
-                <span className="error-icon">⚠️</span>
-                <span>{error}</span>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="auth-form">
-              {/* Email Field */}
+              <div className="form-group">
+                <label htmlFor="role" className="form-label">
+                  Account Type
+                </label>
+                <div className="role-selection">
+                  <div className="role-options">
+                    <label className={`role-option ${formData.role === 'student' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="role"
+                        value="student"
+                        checked={formData.role === 'student'}
+                        onChange={handleChange}
+                        disabled={loading}
+                      />
+                      <div className="role-content">
+                        <span className="role-title">Student</span>
+                      </div>
+                    </label>
+                    
+                    <label className={`role-option ${formData.role === 'instructor' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="role"
+                        value="instructor"
+                        checked={formData.role === 'instructor'}
+                        onChange={handleChange}
+                        disabled={loading}
+                      />
+                      <div className="role-content">
+                        <span className="role-title">Instructor</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <div className="form-group">
                 <label htmlFor="email" className="form-label">
-                  <span className="label-icon">📧</span>
                   Email Address
                 </label>
                 <div className="input-wrapper">
@@ -149,18 +246,15 @@ const Login = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    placeholder="Enter your email address"
+                    placeholder="Enter your email"
                     className="form-input"
                     disabled={loading}
                   />
-                  <div className="input-border"></div>
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="form-group">
                 <label htmlFor="password" className="form-label">
-                  <span className="label-icon">🔐</span>
                   Password
                 </label>
                 <div className="input-wrapper">
@@ -179,57 +273,13 @@ const Login = () => {
                     type="button"
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={loading}
                   >
-                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                    {showPassword ? 'Hide' : 'Show'}
                   </button>
-                  <div className="input-border"></div>
                 </div>
               </div>
 
-              {/* Role Selection */}
-              <div className="form-group">
-                <label htmlFor="role" className="form-label">
-                  <span className="label-icon">👤</span>
-                  Account Type
-                </label>
-                <div className="role-selection">
-                  <div className="role-options">
-                    <label className={`role-option ${formData.role === 'student' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="role"
-                        value="student"
-                        checked={formData.role === 'student'}
-                        onChange={handleChange}
-                        disabled={loading}
-                      />
-                      <div className="role-content">
-                        <span className="role-icon">🎓</span>
-                        <span className="role-title">Student</span>
-                        <span className="role-desc">Take AI-proctored exams</span>
-                      </div>
-                    </label>
-                    
-                    <label className={`role-option ${formData.role === 'instructor' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="role"
-                        value="instructor"
-                        checked={formData.role === 'instructor'}
-                        onChange={handleChange}
-                        disabled={loading}
-                      />
-                      <div className="role-content">
-                        <span className="role-icon">👨‍🏫</span>
-                        <span className="role-title">Instructor</span>
-                        <span className="role-desc">Create and monitor exams</span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Button */}
               <button
                 type="submit"
                 className={`submit-btn ${loading ? 'loading' : ''}`}
@@ -238,18 +288,14 @@ const Login = () => {
                 {loading ? (
                   <>
                     <span className="loading-spinner"></span>
-                    <span>Authenticating...</span>
+                    <span>Signing In...</span>
                   </>
                 ) : (
-                  <>
-                    <span className="btn-icon">🚀</span>
-                    <span>Sign In</span>
-                  </>
+                  <span>Sign In</span>
                 )}
               </button>
             </form>
 
-            {/* Footer Links */}
             <div className="card-footer">
               <p className="footer-text">
                 Don't have an account?{' '}
@@ -257,21 +303,32 @@ const Login = () => {
                   Create one here
                 </Link>
               </p>
-              
-              <div className="footer-links">
-                <a href="#" className="help-link">
-                  <span className="help-icon">❓</span>
-                  Need Help?
-                </a>
-                <a href="#" className="privacy-link">
-                  <span className="privacy-icon">🔒</span>
-                  Privacy Policy
-                </a>
-              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Status Modal */}
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={handleModalClose}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        autoClose={modal.type === 'success'}
+        autoCloseDelay={4000}
+        actionButton={
+          modal.type === 'success' ? (
+            <button 
+              onClick={goToDashboard}
+              className="submit-btn"
+              style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+            >
+              Go to Dashboard
+            </button>
+          ) : null
+        }
+      />
     </div>
   );
 };

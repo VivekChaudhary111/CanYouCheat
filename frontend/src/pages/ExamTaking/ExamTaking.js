@@ -2,104 +2,143 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ExamHeader from './components/ExamHeader';
+import ExamFooter from './components/ExamFooter';
 import QuestionDisplay from './components/QuestionDisplay';
-import NavigationPanel from './components/NavigationPanel';
 import WebcamMonitor from './components/WebcamMonitor';
 import SystemCheck from './components/SystemCheck';
 import SubmissionConfirm from './components/SubmissionConfirm';
-import ExamVerification from './components/ExamVerification'; // Import verification component
 import { useExamTimer } from './hooks/useExamTimer';
 import { useWebcamAccess } from './hooks/useWebcamAccess';
 import { useExamSubmission } from './hooks/useExamSubmission';
 import './ExamTaking.css';
 
-// Simple loading spinner component (or use a library/CSS)
-const LoadingSpinner = () => <div className="loading-spinner"></div>;
-
 const ExamTaking = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
   const { token, user, isStudent } = useAuth();
-
-  // ## State Management
-  // --- Exam Data & Progress ---
+  
+  // State management
   const [exam, setExam] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [examStarted, setExamStarted] = useState(false);
+  const [systemCheckPassed, setSystemCheckPassed] = useState(false);
+  const [showSubmissionConfirm, setShowSubmissionConfirm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [warnings, setWarnings] = useState([]);
   const [sessionId, setSessionId] = useState(null);
 
-  // --- Exam Flow Control ---
-  const [examFlowState, setExamFlowState] = useState('loading'); // loading, systemCheck, verification, preStart, active, error
-  const [systemCheckPassed, setSystemCheckPassed] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [examStarted, setExamStarted] = useState(false); // Tracks if the timer has started
-  const [showSubmissionConfirm, setShowSubmissionConfirm] = useState(false);
-
-  // --- UI State ---
-  const [loadingMessage, setLoadingMessage] = useState('Loading Proctored Exam...');
-  const [error, setError] = useState('');
-  const [warnings, setWarnings] = useState([]); // For proctoring warnings during the exam
-
-  // ## Custom Hooks
+  // Custom hooks
   const { timeRemaining, startTimer, stopTimer, formatTime } = useExamTimer();
-  const {
-    webcamStream,
-    isWebcamActive,
-    webcamError,
-    startWebcam,
-    stopWebcam
+  const { 
+    webcamStream, 
+    isWebcamActive, 
+    webcamError, 
+    startWebcam, 
+    stopWebcam 
   } = useWebcamAccess();
   const { submitExam, submissionLoading } = useExamSubmission();
 
-  // ## Data Fetching
+  // Fetch exam data - wrapped in useCallback to fix dependency warning
   const fetchExamData = useCallback(async () => {
-    setLoadingMessage('Fetching exam details...');
-    setError('');
     try {
+      setLoading(true);
+      setError('');
+
       const response = await fetch(`http://localhost:5000/api/exams/${examId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+
       const data = await response.json();
 
       if (response.ok) {
+        console.log('📊 Exam data received:', data.exam);
+        console.log('📸 Questions with images:', data.exam.questions.filter(q => q.image).length);
+        
+        // Log each question's image status
+        data.exam.questions.forEach((q, index) => {
+          if (q.image) {
+            console.log(`🖼️ Question ${index + 1} has image:`, {
+              hasData: !!q.image.data,
+              altText: q.image.altText,
+              type: q.image.type
+            });
+          }
+        });
+        
         setExam(data.exam);
+        
+        // Initialize answers object
         const initialAnswers = {};
         data.exam.questions.forEach((_, index) => {
-          initialAnswers[index] = null; // Initialize with null or appropriate default
+          initialAnswers[index] = null;
         });
         setAnswers(initialAnswers);
-        setExamFlowState('systemCheck'); // Move to the next state after fetching
       } else {
         throw new Error(data.message || 'Failed to fetch exam data');
       }
-    } catch (err) {
-      console.error('❌ Error fetching exam:', err);
-      setError(`Failed to load exam: ${err.message}`);
-      setExamFlowState('error');
+    } catch (error) {
+      console.error('Error fetching exam:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   }, [examId, token]);
 
-  // Initial effect to check role and fetch data
+  // Fetch exam data
   useEffect(() => {
     if (!isStudent) {
-      navigate('/dashboard'); // Redirect non-students
+      navigate('/dashboard');
       return;
     }
+    
     if (examId && token) {
       fetchExamData();
-    } else {
-      setError("Missing exam ID or authentication token.");
-      setExamFlowState('error');
     }
   }, [examId, token, isStudent, navigate, fetchExamData]);
 
-  // ## Exam Session Management
+  // Auto-submit when time runs out - wrapped in useCallback
+  const handleAutoSubmit = useCallback(async () => {
+    try {
+      const submissionData = {
+        sessionId,
+        examId,
+        answers,
+        endTime: new Date().toISOString(),
+        submissionType: 'auto'
+      };
+
+      await submitExam(submissionData);
+      stopWebcam();
+      
+      navigate('/exams', { 
+        state: { 
+          message: 'Time expired! Exam has been automatically submitted.',
+          type: 'warning'
+        }
+      });
+    } catch (error) {
+      console.error('Error auto-submitting exam:', error);
+      navigate('/exams', { 
+        state: { 
+          message: 'Time expired! There was an error submitting your exam.',
+          type: 'error'
+        }
+      });
+    }
+  }, [sessionId, examId, answers, submitExam, stopWebcam, navigate]);
+
+  useEffect(() => {
+    if (timeRemaining === 0 && examStarted) {
+      handleAutoSubmit();
+    }
+  }, [timeRemaining, examStarted, handleAutoSubmit]);
+
   const createExamSession = async () => {
-    setLoadingMessage('Creating exam session...');
-    setError('');
     try {
       const response = await fetch(`http://localhost:5000/api/exams/${examId}/start-session`, {
         method: 'POST',
@@ -111,77 +150,65 @@ const ExamTaking = () => {
           studentId: user.id,
           browserInfo: {
             userAgent: navigator.userAgent,
+            // Fixed: Use window.screen instead of global screen
             screenResolution: `${window.screen.width}x${window.screen.height}`,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
           }
         })
       });
+
       const data = await response.json();
+      
       if (response.ok) {
         setSessionId(data.sessionId);
-        console.log('✅ Exam session created:', data.sessionId);
         return data.sessionId;
       } else {
         throw new Error(data.message || 'Failed to create exam session');
       }
-    } catch (err) {
-      console.error('❌ Error creating session:', err);
-      setError(`Failed to start session: ${err.message}`);
-      setExamFlowState('error'); // Revert to error state if session fails
+    } catch (error) {
+      console.error('Error creating session:', error);
+      setError(error.message);
       return null;
     }
   };
 
-  // ## Event Handlers & Callbacks
-  // --- System Check ---
   const handleSystemCheckComplete = async (checkResults) => {
     if (checkResults.passed) {
       setSystemCheckPassed(true);
-      setLoadingMessage('Initializing webcam...');
-      const webcamStarted = await startWebcam(); // Start webcam AFTER check passes
-      if (webcamStarted) {
-        setExamFlowState('verification'); // Move to verification
-      } else {
-        setError('Webcam access failed or was denied. Webcam is required for this proctored exam.');
-        setExamFlowState('error'); // Go to error state if webcam fails
+      
+      // Start webcam
+      const webcamStarted = await startWebcam();
+      if (!webcamStarted) {
+        setError('Webcam access is required for this proctored exam');
+        return;
       }
     } else {
-      setError('System check failed. Please resolve the issues and refresh the page to try again.');
-      setExamFlowState('error'); // Stay in error state
+      setError('System check failed. Please resolve the issues before starting the exam.');
     }
   };
 
-  // --- Verification ---
-  const handleVerificationSuccess = () => {
-    console.log('✅ Identity verification successful.');
-    setIsVerified(true);
-    setExamFlowState('preStart'); // Move to pre-start screen
-  };
-
-  const handleVerificationFail = (failError) => {
-    console.error('❌ Identity verification failed:', failError);
-    setError(`Identity Verification Failed: ${failError}. Please ensure you are centered, well-lit, and match your registration photo. Refresh the page to try again.`);
-    setExamFlowState('error'); // Go to error state on failure
-    stopWebcam(); // Stop webcam on verification failure
-  };
-
-  // --- Start Exam ---
   const handleStartExam = async () => {
-    setExamFlowState('loading'); // Show loading while creating session
-    setLoadingMessage('Starting exam session...');
-    const newSessionId = await createExamSession();
-    if (newSessionId) {
+    try {
+      const newSessionId = await createExamSession();
+      if (!newSessionId) return;
+
       setExamStarted(true);
-      startTimer(exam.duration * 60); // Start timer (duration in minutes -> seconds)
-      addWarning('🚀 Exam started. Monitoring is active.');
-      setExamFlowState('active'); // Finally, move to the active exam state
+      startTimer(exam.duration * 60); // Convert minutes to seconds
+      
+      // Add warning for exam start
+      addWarning('Exam started. You are now being monitored.');
+      
+    } catch (error) {
+      console.error('Error starting exam:', error);
+      setError('Failed to start exam. Please try again.');
     }
-    // Error handling is done within createExamSession
   };
 
-  // --- During Exam ---
   const handleAnswerChange = (questionIndex, answer) => {
-    setAnswers(prev => ({ ...prev, [questionIndex]: answer }));
+    setAnswers(prev => ({
+      ...prev,
+      [questionIndex]: answer
+    }));
   };
 
   const handleQuestionNavigation = (direction) => {
@@ -198,81 +225,65 @@ const ExamTaking = () => {
     }
   };
 
-  // --- Submission ---
-  const triggerSubmit = () => {
+  const handleSubmitExam = () => {
     setShowSubmissionConfirm(true);
   };
 
-  const cancelSubmit = () => {
-    setShowSubmissionConfirm(false);
+  const handleConfirmSubmission = async () => {
+    try {
+      const submissionData = {
+        sessionId,
+        examId,
+        answers,
+        endTime: new Date().toISOString(),
+        submissionType: 'manual'
+      };
+
+      const result = await submitExam(submissionData);
+      
+      if (result.success) {
+        stopTimer();
+        stopWebcam();
+        navigate('/exams', { 
+          state: { message: 'Exam submitted successfully!' }
+        });
+      } else {
+        throw new Error(result.message || 'Failed to submit exam');
+      }
+    } catch (error) {
+      console.error('Error submitting exam:', error);
+      setError(error.message);
+      setShowSubmissionConfirm(false);
+    }
   };
 
-  const confirmSubmit = async (submissionType = 'manual') => {
-    setError(''); // Clear previous submission errors
-    setShowSubmissionConfirm(false); // Close modal immediately
-
-    const submissionData = {
-      sessionId,
-      examId,
-      answers,
-      endTime: new Date().toISOString(),
-      submissionType
+  const addWarning = (message) => {
+    const warning = {
+      id: Date.now(),
+      message,
+      timestamp: new Date().toISOString()
     };
-
-    const result = await submitExam(submissionData); // submitExam handles its own loading state
-
-    if (result.success) {
-      console.log(`✅ Exam ${submissionType}ly submitted.`);
-      stopTimer();
-      stopWebcam();
-      navigate('/exams', {
-        state: { message: `Exam submitted ${submissionType}ly.` }
-      });
-    } else {
-      console.error(`❌ Exam ${submissionType} submission failed:`, result.message);
-      setError(`Failed to submit exam: ${result.message}. Please try again or contact support.`);
-      // Keep user on the exam page to allow retry or show error prominently
-      setExamFlowState('active'); // Stay in active state but show error banner
-      // Do NOT navigate away on failed submission
-    }
+    
+    setWarnings(prev => [...prev, warning]);
+    
+    // Auto-remove warning after 5 seconds
+    setTimeout(() => {
+      setWarnings(prev => prev.filter(w => w.id !== warning.id));
+    }, 5000);
   };
 
-  // Auto-submit handler - uses confirmSubmit
-  const handleAutoSubmit = useCallback(() => {
-    if (examStarted && !submissionLoading) { // Prevent multiple submits
-        console.warn('⏱️ Time expired. Auto-submitting exam...');
-        addWarning('Time expired! Submitting your answers automatically.');
-        confirmSubmit('auto');
-    }
-  }, [examStarted, submissionLoading, confirmSubmit]); // Add confirmSubmit dependency
-
-  // Effect for timer expiration
-  useEffect(() => {
-    if (timeRemaining === 0 && examStarted) {
-      handleAutoSubmit();
-    }
-  }, [timeRemaining, examStarted, handleAutoSubmit]);
-
-
-  // ## Proctoring Warnings & Navigation Prevention
-  const addWarning = useCallback((message) => {
-    const warning = { id: Date.now(), message, timestamp: new Date().toISOString() };
-    setWarnings(prev => [warning, ...prev].slice(0, 5)); // Keep only last 5 warnings
-    // Optional: Log warning to backend here
-  }, []);
-
+  // Prevent navigation away from exam
   useEffect(() => {
     if (examStarted) {
       const handleBeforeUnload = (e) => {
         e.preventDefault();
-        e.returnValue = 'Are you sure you want to leave? Your exam is in progress and may be submitted automatically.';
-        return e.returnValue; // For older browsers
+        e.returnValue = 'Are you sure you want to leave? Your exam progress may be lost.';
+        return e.returnValue;
       };
+
       const handleVisibilityChange = () => {
         if (document.hidden) {
-          addWarning('⚠️ Warning: Tab switched or window minimized!');
-          // Log this event to backend session immediately
-          // fetch(`http://localhost:5000/api/exams/sessions/${sessionId}/log`, { method: 'POST', ... });
+          addWarning('Warning: Tab switching detected!');
         }
       };
 
@@ -284,37 +295,51 @@ const ExamTaking = () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     }
-  }, [examStarted, addWarning, sessionId]);
+  }, [examStarted]);
 
-  // ## Render Logic based on Flow State
-
-  // --- Loading State ---
-  if (examFlowState === 'loading') {
+  // Rest of the component remains the same...
+  if (loading) {
     return (
-      <div className="exam-taking-container loading-container">
-        <LoadingSpinner />
-        <h2>{loadingMessage}</h2>
-        <p>Please wait...</p>
+      <div className="exam-taking-container">
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <h2>Loading Proctored Exam</h2>
+          <p>Please wait while we prepare your exam environment.</p>
+        </div>
       </div>
     );
   }
 
-  // --- Error State ---
-  if (examFlowState === 'error') {
+  if (error) {
     return (
-      <div className="exam-taking-container error-container">
-        <h2>🚫 Exam Access Error</h2>
-        <p className="error-message">{error}</p>
-        <button className="btn btn-secondary" onClick={() => navigate('/exams')}>
-          Back to Exams List
-        </button>
-        {/* Optionally add a retry button that calls fetchExamData again */}
+      <div className="exam-taking-container">
+        <div className="error-state">
+          <h2>Exam Access Error</h2>
+          <p>{error}</p>
+          <button className="btn btn-primary" onClick={() => navigate('/exams')}>
+            Back to Exams
+          </button>
+        </div>
       </div>
     );
   }
 
-  // --- System Check State ---
-  if (examFlowState === 'systemCheck') {
+  if (!exam) {
+    return (
+      <div className="exam-taking-container">
+        <div className="error-state">
+          <h2>Exam Not Found</h2>
+          <p>The requested exam could not be found.</p>
+          <button className="btn btn-primary" onClick={() => navigate('/exams')}>
+            Back to Exams
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // System check phase
+  if (!systemCheckPassed) {
     return (
       <div className="exam-taking-container">
         <SystemCheck
@@ -326,157 +351,143 @@ const ExamTaking = () => {
     );
   }
 
-  // --- Verification State ---
-  if (examFlowState === 'verification') {
-    // Ensure webcam is active before showing verification
-    if (!isWebcamActive) {
-      return (
-         <div className="exam-taking-container loading-container">
-            <LoadingSpinner />
-            <h2>Initializing Webcam...</h2>
-            {webcamError && <p className="error-message">{webcamError}</p>}
-         </div>
-      );
-    }
+  // Pre-exam phase
+  if (!examStarted) {
     return (
       <div className="exam-taking-container">
-        <ExamVerification
-          examId={examId}
-          onVerificationSuccess={handleVerificationSuccess}
-          onVerificationFail={handleVerificationFail}
-          onCancel={() => { stopWebcam(); navigate('/exams'); }}
-        />
-      </div>
-    );
-  }
-
-  // --- Pre-Start State ---
-  if (examFlowState === 'preStart') {
-    return (
-      <div className="exam-taking-container pre-exam-container">
-        <div className="exam-info-card">
-          <h1>{exam.title}</h1>
-          <p className="exam-description">{exam.description}</p>
-          <div className="exam-details">
-            <div className="detail-item"><span className="label">Duration:</span> <span className="value">{exam.duration} minutes</span></div>
-            <div className="detail-item"><span className="label">Questions:</span> <span className="value">{exam.questions.length}</span></div>
-            <div className="detail-item"><span className="label">Marks:</span> <span className="value">{exam.totalMarks}</span></div>
-            <div className="detail-item"><span className="label">Passing:</span> <span className="value">{exam.passingScore}</span></div>
-          </div>
-          <div className="proctoring-notice">
-            <h3>🔒 AI Proctoring Active</h3>
-            <p>Identity verified. This exam will be monitored using:</p>
-            {/* Dynamically list enabled features based on exam.proctoringSettings */}
-            <ul>
-              {exam.proctoringSettings?.faceDetectionEnabled && <li>Face detection and tracking</li>}
-              {exam.proctoringSettings?.eyeTrackingEnabled && <li>Gaze direction analysis</li>}
-              {/* Add other features as needed */}
-              <li>Webcam & Microphone Recording</li>
-              <li>Browser Activity Monitoring</li>
-            </ul>
-          </div>
-          <div className="webcam-preview pre-start-webcam">
-            <WebcamMonitor stream={webcamStream} isActive={isWebcamActive} error={webcamError} compact={false} />
-          </div>
-          <div className="start-exam-actions">
-            <button className="btn btn-secondary" onClick={() => { stopWebcam(); navigate('/exams'); }}>
-              Cancel
-            </button>
-            <button className="btn btn-primary btn-large" onClick={handleStartExam} disabled={!isWebcamActive}>
-              Start Proctored Exam
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // --- Active Exam State ---
-  if (examFlowState === 'active') {
-    return (
-      <div className="exam-taking-container exam-active">
-        {/* Global Error Banner (for submission errors etc.) */}
-        {error && (
-            <div className="error-banner">
-                <span>{error}</span>
-                <button onClick={() => setError('')}>&times;</button>
-            </div>
-        )}
-        {/* Warnings Area */}
-        {warnings.length > 0 && (
-          <div className="warnings-container">
-            {warnings.map(warning => (
-              <div key={warning.id} className="warning-alert">
-                {warning.message}
+        <div className="pre-exam-container">
+          <div className="exam-info-card">
+            <h1>{exam.title}</h1>
+            <p className="exam-description">{exam.description}</p>
+            
+            <div className="exam-details">
+              <div className="detail-item">
+                <span className="label">Duration:</span>
+                <span className="value">{exam.duration} minutes</span>
               </div>
-            ))}
-          </div>
-        )}
+              <div className="detail-item">
+                <span className="label">Total Questions:</span>
+                <span className="value">{exam.questions.length}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Total Marks:</span>
+                <span className="value">{exam.totalMarks}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">Passing Score:</span>
+                <span className="value">{exam.passingScore}</span>
+              </div>
+            </div>
 
-        <ExamHeader
-          exam={exam}
-          timeRemaining={timeRemaining}
-          formatTime={formatTime}
-          currentQuestion={currentQuestionIndex + 1}
-          totalQuestions={exam.questions.length}
-          onSubmit={triggerSubmit} // Use triggerSubmit to show modal
-        />
+            <div className="proctoring-notice">
+              <h3>AI Proctoring Active</h3>
+              <p>This exam is monitored by AI-enhanced proctoring technology:</p>
+              <ul>
+                {exam.proctoringSettings?.faceDetectionEnabled && <li>Face detection and tracking</li>}
+                {exam.proctoringSettings?.eyeTrackingEnabled && <li>Eye movement analysis</li>}
+                {exam.proctoringSettings?.voiceDetectionEnabled && <li>Audio monitoring</li>}
+                {exam.proctoringSettings?.multiplePersonDetection && <li>Multiple person detection</li>}
+                {exam.proctoringSettings?.browserActivityMonitoring && <li>Browser activity monitoring</li>}
+              </ul>
+            </div>
 
-        <div className="exam-content">
-          <div className="exam-main">
-            <QuestionDisplay
-              question={exam.questions[currentQuestionIndex]}
-              questionIndex={currentQuestionIndex}
-              answer={answers[currentQuestionIndex]}
-              onAnswerChange={handleAnswerChange}
-              totalQuestions={exam.questions.length}
-            />
-            <NavigationPanel
-              questions={exam.questions}
-              answers={answers}
-              currentQuestionIndex={currentQuestionIndex}
-              onQuestionNavigation={handleQuestionNavigation}
-              onQuestionJump={handleQuestionJump}
-              onSubmit={triggerSubmit} // Use triggerSubmit
-            />
-          </div>
-          <div className="exam-sidebar">
-            <WebcamMonitor
-              stream={webcamStream}
-              isActive={isWebcamActive}
-              error={webcamError}
-              compact={true} // Use compact view during exam
-              // Pass sessionId and examId for sending frames/flags
-              sessionId={sessionId}
-              examId={examId}
-              onProctoringEvent={addWarning} // Callback for webcam monitor to add warnings
-            />
-            {/* You could add a proctoring status indicator here */}
+            <div className="webcam-preview">
+              <WebcamMonitor 
+                stream={webcamStream}
+                isActive={isWebcamActive}
+                error={webcamError}
+                compact={false}
+              />
+            </div>
+
+            <div className="start-exam-actions">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => navigate('/exams')}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary btn-large"
+                onClick={handleStartExam}
+                disabled={!isWebcamActive}
+              >
+                Start Proctored Exam
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Submission Confirmation Modal */}
-        {showSubmissionConfirm && (
-          <SubmissionConfirm
-            exam={exam}
-            answers={answers}
-            onConfirm={() => confirmSubmit('manual')} // Use confirmSubmit
-            onCancel={cancelSubmit}
-            loading={submissionLoading}
-          />
-        )}
       </div>
     );
   }
 
-  // Fallback if state is somehow invalid
+  // Main exam interface
   return (
-    <div className="exam-taking-container error-container">
-      <h2>Unexpected Error</h2>
-      <p>An unexpected error occurred in the exam flow. Please refresh or go back.</p>
-       <button className="btn btn-secondary" onClick={() => navigate('/exams')}>
-          Back to Exams List
-        </button>
+    <div className="exam-taking-container exam-active">
+      {/* Warnings */}
+      {warnings.length > 0 && (
+        <div className="warnings-container">
+          {warnings.map(warning => (
+            <div key={warning.id} className="warning-alert">
+              {warning.message}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Exam Header */}
+      <ExamHeader
+        exam={exam}
+        timeRemaining={timeRemaining}
+        currentQuestion={currentQuestionIndex}
+        totalQuestions={exam.questions.length}
+        isMonitoring={isWebcamActive}
+      />
+
+      <div className="exam-content">
+        <div className="exam-main">
+          {/* Question Display */}
+          <QuestionDisplay
+            question={exam.questions[currentQuestionIndex]}
+            questionIndex={currentQuestionIndex}
+            answer={answers[currentQuestionIndex]}
+            onAnswerChange={handleAnswerChange}
+            totalQuestions={exam.questions.length}
+          />
+        </div>
+
+        {/* Webcam Monitor */}
+        <div className="exam-sidebar">
+          <WebcamMonitor 
+            stream={webcamStream}
+            isActive={isWebcamActive}
+            error={webcamError}
+            compact={true}
+          />
+        </div>
+      </div>
+
+      {/* Add ExamFooter here */}
+      <ExamFooter
+        currentQuestion={currentQuestionIndex}
+        totalQuestions={exam.questions.length}
+        onPrevious={() => handleQuestionNavigation('prev')}
+        onNext={() => handleQuestionNavigation('next')}
+        onSubmit={handleSubmitExam}
+        answeredQuestions={Object.values(answers).filter(answer => answer !== null && answer !== '')}
+        canSubmit={Object.values(answers).filter(answer => answer !== null && answer !== '').length > 0}
+      />
+
+      {/* Submission Confirmation Modal */}
+      {showSubmissionConfirm && (
+        <SubmissionConfirm
+          exam={exam}
+          answers={answers}
+          onConfirm={handleConfirmSubmission}
+          onCancel={() => setShowSubmissionConfirm(false)}
+          loading={submissionLoading}
+        />
+      )}
     </div>
   );
 };

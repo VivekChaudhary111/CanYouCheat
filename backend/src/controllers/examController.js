@@ -244,6 +244,7 @@ const getExamById = async (req, res) => {
     }
 
     console.log('✅ Exam details retrieved successfully');
+    console.log(`📸 Questions with images: ${exam.questions.filter(q => q.image).length}`);
 
     res.json({
       success: true,
@@ -257,7 +258,22 @@ const getExamById = async (req, res) => {
         startDate: exam.startDate,
         endDate: exam.endDate,
         isActive: exam.isActive,
-        questions: exam.questions,
+        questions: exam.questions.map(question => ({
+          _id: question._id,
+          questionText: question.questionText,
+          questionType: question.questionType,
+          options: question.options || [],
+          correctAnswer: question.correctAnswer,
+          marks: question.marks,
+          timeLimit: question.timeLimit,
+          // IMPORTANT: Include image data
+          image: question.image ? {
+            data: question.image.data,
+            altText: question.image.altText || 'Question diagram',
+            name: question.image.name,
+            type: question.image.type
+          } : null
+        })),
         allowedStudents: exam.allowedStudents,
         proctoringSettings: exam.proctoringSettings || {
           faceDetectionEnabled: true,
@@ -275,7 +291,8 @@ const getExamById = async (req, res) => {
     console.error('❌ Error fetching exam details:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Server error while fetching exam details' 
+      message: 'Server error while fetching exam details',
+      error: error.message
     });
   }
 };
@@ -1232,33 +1249,158 @@ const createExam = async (req, res) => {
   try {
     console.log('🔧 Creating new AI-monitored exam...');
     
-    const examData = {
-      ...req.body,
-      createdBy: req.user.id,
-      proctoringSettings: {
-        faceDetectionEnabled: true,
-        eyeTrackingEnabled: true,
-        voiceDetectionEnabled: false,
-        multiplePersonDetection: true,
-        browserActivityMonitoring: true,
-        ...req.body.proctoringSettings
+    const {
+      title,
+      description,
+      duration,
+      totalMarks,
+      passingScore,
+      startDate,
+      endDate,
+      questions,
+      proctoringSettings,
+      allowedStudents = []
+    } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !duration || !totalMarks || !passingScore || !startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields for AI-proctored exam'
+      });
+    }
+
+    // Validate questions
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one question is required for AI-monitored exam'
+      });
+    }
+
+    // Validate and clean question data
+    const validatedQuestions = questions.map((question, index) => {
+      console.log(`📝 Processing question ${index + 1}:`, {
+        questionType: question.questionType,
+        hasImage: !!question.image,
+        imageDataLength: question.image?.data?.length || 0
+      });
+
+      const validatedQuestion = {
+        questionText: question.questionText,
+        questionType: question.questionType,
+        marks: question.marks,
+        timeLimit: question.timeLimit || null
+      };
+
+      // Handle different question types
+      if (question.questionType === 'multiple-choice') {
+        if (!question.options || !Array.isArray(question.options) || question.options.length < 2) {
+          throw new Error(`Question ${index + 1}: Multiple choice questions need at least 2 options`);
+        }
+        
+        const hasCorrectAnswer = question.options.some(option => option.isCorrect);
+        if (!hasCorrectAnswer) {
+          throw new Error(`Question ${index + 1}: Multiple choice questions need at least one correct answer`);
+        }
+        
+        validatedQuestion.options = question.options.map(option => ({
+          text: option.text,
+          isCorrect: Boolean(option.isCorrect)
+        }));
+      } else {
+        // For non-MCQ questions, store the correct answer
+        validatedQuestion.correctAnswer = question.correctAnswer || '';
       }
+
+      // Handle image data if present
+      if (question.image && question.image.data) {
+        console.log(`🖼️ Question ${index + 1} has image:`, {
+          name: question.image.name,
+          type: question.image.type,
+          dataLength: question.image.data.length,
+          altText: question.image.altText
+        });
+
+        // Validate image data format
+        if (!question.image.data.startsWith('data:image/')) {
+          throw new Error(`Question ${index + 1}: Invalid image data format`);
+        }
+
+        validatedQuestion.image = {
+          data: question.image.data,
+          name: question.image.name || 'question-image',
+          type: question.image.type || 'image/png',
+          altText: question.image.altText || ''
+        };
+      }
+
+      return validatedQuestion;
+    });
+
+    // Create the exam with AI proctoring features
+    const examData = {
+      title,
+      description,
+      duration,
+      totalMarks,
+      passingScore,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      questions: validatedQuestions,
+      proctoringSettings: {
+        faceDetectionEnabled: proctoringSettings?.faceDetectionEnabled ?? true,
+        eyeTrackingEnabled: proctoringSettings?.eyeTrackingEnabled ?? true,
+        voiceDetectionEnabled: proctoringSettings?.voiceDetectionEnabled ?? true,
+        multiplePersonDetection: proctoringSettings?.multiplePersonDetection ?? true,
+        browserActivityMonitoring: proctoringSettings?.browserActivityMonitoring ?? true,
+        riskThreshold: proctoringSettings?.riskThreshold ?? 70,
+        allowedViolations: proctoringSettings?.allowedViolations ?? 3,
+        suspiciousBehaviorDetection: proctoringSettings?.suspiciousBehaviorDetection ?? true,
+        backgroundNoiseMonitoring: proctoringSettings?.backgroundNoiseMonitoring ?? true,
+        screenSharingBlocked: proctoringSettings?.screenSharingBlocked ?? true,
+        tabSwitchingBlocked: proctoringSettings?.tabSwitchingBlocked ?? true,
+        lowBandwidthMode: proctoringSettings?.lowBandwidthMode ?? false
+      },
+      allowedStudents: allowedStudents,
+      createdBy: req.user.id,
+      isActive: true
     };
 
-    const exam = new Exam(examData);
-    await exam.save();
+    console.log('📊 Final exam data structure:', {
+      title: examData.title,
+      questionsCount: examData.questions.length,
+      questionsWithImages: examData.questions.filter(q => q.image).length,
+      proctoringFeatures: Object.keys(examData.proctoringSettings).filter(
+        key => examData.proctoringSettings[key] === true
+      ).length
+    });
 
-    console.log('✅ AI-monitored exam created successfully:', exam._id);
+    const newExam = new Exam(examData);
+    const savedExam = await newExam.save();
+
+    console.log('✅ AI-proctored exam created successfully with ID:', savedExam._id);
+    console.log(`📸 Images saved: ${savedExam.questions.filter(q => q.image).length}`);
+
     res.status(201).json({
       success: true,
-      message: 'AI-monitored exam created successfully',
-      exam
+      message: 'AI-proctored exam created successfully with advanced monitoring capabilities',
+      exam: {
+        id: savedExam._id,
+        title: savedExam.title,
+        questionsCount: savedExam.questions.length,
+        questionsWithImages: savedExam.questions.filter(q => q.image).length,
+        proctoringEnabled: true,
+        createdAt: savedExam.createdAt
+      }
     });
+
   } catch (error) {
     console.error('❌ Error creating AI exam:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error while creating AI-monitored exam' 
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create AI-proctored exam',
+      error: error.message
     });
   }
 };

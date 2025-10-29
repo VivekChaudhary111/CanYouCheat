@@ -1,8 +1,8 @@
-# 🔒 CanYouCheat Backend - AI Proctoring API Server
+# CanYouCheat Backend - AI Proctoring API Server
 
 > **Powerful Node.js backend server providing AI-enhanced exam proctoring capabilities with real-time behavior analysis and comprehensive reporting.**
 
-## 📋 **Table of Contents**
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -16,28 +16,28 @@
 - [Testing](#testing)
 - [Deployment](#deployment)
 
-## 🎯 **Overview**
+## Overview
 
 The CanYouCheat backend is a robust Node.js application built with Express.js that provides comprehensive API services for AI-enhanced exam proctoring. It handles user authentication, exam management, real-time behavior analysis, and evidence storage.
 
-### **Key Capabilities**
-- 🔐 **Secure Authentication** - JWT-based role-based access control
-- 🤖 **AI Behavior Analysis** - Real-time suspicious behavior detection
-- 📊 **Risk Assessment** - Dynamic scoring algorithms
-- 🔄 **Real-time Communication** - Socket.IO for live monitoring
-- 📝 **Exam Management** - Complete CRUD operations for exams
-- 📈 **Analytics & Reporting** - Comprehensive proctoring reports
+### Key Capabilities
+- **Secure Authentication** - JWT-based role-based access control
+- **AI Behavior Analysis** - Real-time suspicious behavior detection
+- **Risk Assessment** - Dynamic scoring algorithms
+- **Real-time Communication** - Socket.IO for live monitoring
+- **Exam Management** - Complete CRUD operations for exams
+- **Analytics & Reporting** - Comprehensive proctoring reports
 
-## ✨ **Features**
+## Features
 
-### **Authentication & Authorization**
+### Authentication & Authorization
 - JWT token-based authentication
 - Role-based access control (Student, Instructor, Admin)
 - Secure password hashing with bcrypt
 - Token refresh and validation
 - Session management
 
-### **AI-Powered Proctoring**
+### AI-Powered Proctoring
 - Real-time behavior analysis engine
 - Face detection and tracking
 - Eye movement analysis
@@ -45,33 +45,33 @@ The CanYouCheat backend is a robust Node.js application built with Express.js th
 - Risk scoring algorithms
 - Evidence capture and storage
 
-### **Exam Management**
+### Exam Management
 - Complete exam lifecycle management
 - Question bank management
 - Student assignment and tracking
 - Time-based exam controls
 - Submission handling
 
-### **Real-time Monitoring**
+### Real-time Monitoring
 - WebSocket-based live communication
 - Real-time behavior data streaming
 - Instant alert notifications
 - Live dashboard updates
 
-## 🏗️ **Architecture**
+## Architecture
 
 ```
 Backend Architecture
-├── 🌐 API Layer (Express.js)
-├── 🔐 Authentication (JWT + Passport)
-├── 🤖 AI Processing Engine
-├── 📊 Business Logic Services
-├── 💾 Database Layer (MongoDB)
-├── 🔄 Real-time (Socket.IO)
-└── 📁 File Storage System
+├── API Layer (Express.js)
+├── Authentication (JWT + Passport)
+├── AI Processing Engine
+├── Business Logic Services
+├── Database Layer (MongoDB)
+├── Real-time (Socket.IO)
+└── File Storage System
 ```
 
-### **Component Breakdown**
+### Component Breakdown
 
 ```
 src/
@@ -99,14 +99,14 @@ src/
 └── utils/                # Utility functions
 ```
 
-## 🚀 **Installation**
+## Installation
 
-### **Prerequisites**
+### Prerequisites
 - Node.js v16.0.0 or higher
 - MongoDB v4.4 or higher
 - npm or yarn package manager
 
-### **Setup Steps**
+### Setup Steps
 
 1. **Navigate to backend directory**
 ```bash
@@ -140,9 +140,9 @@ npm run dev
 
 The server will start on `http://localhost:5000`
 
-## ⚙️ **Configuration**
+## Configuration
 
-### **Environment Variables**
+### Environment Variables
 
 Create a `.env` file in the backend root:
 
@@ -190,15 +190,15 @@ SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 ```
 
-### **Database Configuration**
+### Database Configuration
 
 The application uses MongoDB with Mongoose ODM. Connection is configured in `src/config/db.js`.
 
-## 🔌 **API Reference**
+## API Reference
 
-### **Authentication Endpoints**
+### Authentication Endpoints
 
-#### **POST /api/auth/register**
+#### POST /api/auth/register
 Register a new user account.
 
 ```javascript
@@ -223,7 +223,7 @@ Register a new user account.
 }
 ```
 
-#### **POST /api/auth/login**
+#### POST /api/auth/login
 Authenticate user and receive JWT token.
 
 ```javascript
@@ -247,7 +247,7 @@ Authenticate user and receive JWT token.
 }
 ```
 
-#### **GET /api/auth/verify**
+#### GET /api/auth/verify
 Verify JWT token validity.
 
 ```javascript
@@ -266,9 +266,9 @@ Authorization: Bearer jwt_token_here
 }
 ```
 
-### **Exam Management Endpoints**
+### Exam Management Endpoints
 
-#### **GET /api/exams**
+#### GET /api/exams
 Get all exams (filtered by user role).
 
 ```javascript
@@ -290,7 +290,7 @@ Get all exams (filtered by user role).
 }
 ```
 
-#### **POST /api/exams**
+#### POST /api/exams
 Create a new exam (Instructor only).
 
 ```javascript
@@ -332,9 +332,9 @@ Create a new exam (Instructor only).
 }
 ```
 
-### **Proctoring Endpoints**
+### Proctoring Endpoints
 
-#### **POST /api/proctoring/start**
+#### POST /api/proctoring/start
 Start a proctoring session for an exam.
 
 ```javascript
@@ -352,7 +352,7 @@ Start a proctoring session for an exam.
 }
 ```
 
-#### **POST /api/proctoring/analyze**
+#### POST /api/proctoring/analyze
 Submit behavior data for analysis.
 
 ```javascript
@@ -387,9 +387,9 @@ Submit behavior data for analysis.
 }
 ```
 
-### **Dashboard Endpoints**
+### Dashboard Endpoints
 
-#### **GET /api/dashboard/stats**
+#### GET /api/dashboard/stats
 Get dashboard statistics for the user.
 
 ```javascript
@@ -426,9 +426,9 @@ Get dashboard statistics for the user.
 }
 ```
 
-## 🤖 **AI Components**
+## AI Components
 
-### **Behavior Analyzer** (`src/ai/behaviorAnalyzer.js`)
+### Behavior Analyzer (`src/ai/behaviorAnalyzer.js`)
 
 The behavior analyzer processes webcam and audio data to detect suspicious activities.
 
@@ -468,7 +468,7 @@ const BehaviorAnalyzer = {
 };
 ```
 
-### **Risk Scorer** (`src/ai/riskScorer.js`)
+### Risk Scorer (`src/ai/riskScorer.js`)
 
 The risk scorer calculates risk scores based on behavior patterns.
 
@@ -500,9 +500,9 @@ const RiskScorer = {
 };
 ```
 
-## 💾 **Database Schema**
+## Database Schema
 
-### **User Model**
+### User Model
 ```javascript
 const userSchema = {
   name: { type: String, required: true },
@@ -518,7 +518,7 @@ const userSchema = {
 };
 ```
 
-### **Exam Model**
+### Exam Model
 ```javascript
 const examSchema = {
   title: { type: String, required: true },
@@ -542,7 +542,7 @@ const examSchema = {
 };
 ```
 
-### **Proctoring Session Model**
+### Proctoring Session Model
 ```javascript
 const proctoringSessionSchema = {
   examId: { type: ObjectId, ref: 'Exam', required: true },
@@ -564,9 +564,9 @@ const proctoringSessionSchema = {
 };
 ```
 
-## 🔄 **WebSocket Events**
+## WebSocket Events
 
-### **Client → Server Events**
+### Client → Server Events
 
 ```javascript
 // Join proctoring session
@@ -590,7 +590,7 @@ socket.emit('heartbeat', {
 });
 ```
 
-### **Server → Client Events**
+### Server → Client Events
 
 ```javascript
 // Risk score update
@@ -619,9 +619,9 @@ socket.emit('session-update', {
 });
 ```
 
-## 🧪 **Testing**
+## Testing
 
-### **Running Tests**
+### Running Tests
 
 ```bash
 # Run all tests
@@ -640,7 +640,7 @@ npm test -- auth.test.js
 npm test -- --grep "authentication"
 ```
 
-### **Test Structure**
+### Test Structure
 
 ```
 tests/
@@ -654,7 +654,7 @@ tests/
     └── database.test.js   # Database integration tests
 ```
 
-### **Example Test**
+### Example Test
 
 ```javascript
 // tests/auth.test.js
@@ -691,9 +691,9 @@ describe('Authentication', () => {
 });
 ```
 
-## 🚀 **Deployment**
+## Deployment
 
-### **Production Setup**
+### Production Setup
 
 1. **Environment Configuration**
 ```bash
@@ -709,7 +709,7 @@ npm run build
 npm start
 ```
 
-### **Docker Deployment**
+### Docker Deployment
 
 ```dockerfile
 # Dockerfile
@@ -733,7 +733,7 @@ docker build -t canyoucheat-backend .
 docker run -p 5000:5000 -d canyoucheat-backend
 ```
 
-### **Health Checks**
+### Health Checks
 
 The server provides health check endpoints for monitoring:
 
@@ -752,9 +752,9 @@ The server provides health check endpoints for monitoring:
 }
 ```
 
-## 📊 **Performance & Monitoring**
+## Performance & Monitoring
 
-### **Logging**
+### Logging
 
 The application uses structured logging with Winston:
 
@@ -775,7 +775,7 @@ const logger = winston.createLogger({
 });
 ```
 
-### **Performance Metrics**
+### Performance Metrics
 
 Monitor key performance indicators:
 - API response times
@@ -784,9 +784,9 @@ Monitor key performance indicators:
 - AI processing latency
 - Memory usage and CPU utilization
 
-## 🔒 **Security**
+## Security
 
-### **Security Measures**
+### Security Measures
 - JWT token authentication
 - Password hashing with bcrypt
 - Rate limiting on API endpoints
@@ -795,7 +795,7 @@ Monitor key performance indicators:
 - SQL injection prevention
 - XSS protection
 
-### **Security Headers**
+### Security Headers
 ```javascript
 app.use(helmet({
   contentSecurityPolicy: {
@@ -809,7 +809,7 @@ app.use(helmet({
 }));
 ```
 
-## 📝 **Contributing**
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -819,7 +819,7 @@ app.use(helmet({
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
-### **Code Style**
+### Code Style
 - Use ESLint configuration
 - Follow async/await patterns
 - Write comprehensive JSDoc comments
@@ -827,6 +827,6 @@ app.use(helmet({
 
 ---
 
-**Built with ❤️ for Academic Integrity**
+**Built with care for Academic Integrity**
 
 *Last updated: October 2025*
