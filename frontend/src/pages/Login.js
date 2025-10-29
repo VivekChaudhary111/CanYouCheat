@@ -12,10 +12,20 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [preventAutoRedirect, setPreventAutoRedirect] = useState(false); // Add this flag
+  
+  // Modal state
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: '',
+    title: '',
+    message: ''
+  });
 
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
+  // Modified useEffect to respect the prevent redirect flag
   useEffect(() => {
     if (isAuthenticated && user) {
       navigate("/dashboard");
@@ -82,12 +92,6 @@ const Login = () => {
               <h2 className="card-title">Welcome Back</h2>
               <p className="card-subtitle">Sign in to access your dashboard</p>
             </div>
-
-            {error && (
-              <div className="error-message">
-                <span>{error}</span>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
@@ -172,6 +176,7 @@ const Login = () => {
                     type="button"
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={loading}
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -205,6 +210,28 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Status Modal */}
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={handleModalClose}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        autoClose={modal.type === 'success'}
+        autoCloseDelay={4000}
+        actionButton={
+          modal.type === 'success' ? (
+            <button 
+              onClick={goToDashboard}
+              className="submit-btn"
+              style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+            >
+              Go to Dashboard
+            </button>
+          ) : null
+        }
+      />
     </div>
   );
 };

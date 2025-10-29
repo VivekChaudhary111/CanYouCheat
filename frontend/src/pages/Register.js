@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import StatusModal from '../components/StatusModal';
 import Webcam from 'react-webcam';
 import './Auth.css';
 
@@ -24,9 +25,24 @@ const Register = () => {
   const [capturedImage, setCapturedImage] = useState(null);
 
   // Handle input change
+  
+  // Modal state
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: '',
+    title: '',
+    message: ''
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+
+    // Clear error when user types
+    if (error) setError('');
 
     if (name === 'password') {
       checkPasswordStrength(value);
@@ -35,11 +51,74 @@ const Register = () => {
 
   // Password strength checker
   const checkPasswordStrength = (password) => {
-    if (!password) return setPasswordStrength('');
-    if (password.length < 6) return setPasswordStrength('weak');
-    if (password.length < 10) return setPasswordStrength('medium');
-    setPasswordStrength('strong');
+    if (password.length === 0) {
+      setPasswordStrength('');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setPasswordStrength('weak');
+    } else if (password.length < 10) {
+      setPasswordStrength('medium');
+    } else {
+      setPasswordStrength('strong');
+    }
   };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      return 'Full name is required';
+    }
+
+    if (!formData.email.trim()) {
+      return 'Email is required';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      return 'Password is required';
+    }
+
+    if (formData.password.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      return 'Passwords do not match';
+    }
+
+    return null;
+  };
+
+  const showModal = (type, title, message) => {
+    setModal({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+  };
+
+  const closeModal = () => {
+    setModal({
+      isOpen: false,
+      type: '',
+      title: '',
+      message: ''
+    });
+  };
+
+  const handleModalClose = () => {
+    closeModal();
+    if (modal.type === 'success') {
+      navigate('/login');
+    }
+  };
+
 
   // Capture image from webcam
   const captureImage = () => {
@@ -58,13 +137,25 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      showModal(
+        'error',
+        'Registration Failed',
+        validationError
+      );
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+    // If student — open camera first if not yet captured
+    if (formData.role === 'student' && !capturedImage && !cameraOpen) {
+      setCameraOpen(true);
+      return;
+    }
+
+    if (formData.role === 'student' && !capturedImage) {
+      setError('Please capture your face image before registration.');
       return;
     }
 
@@ -81,6 +172,8 @@ const Register = () => {
 
     setLoading(true);
     try {
+      console.log('Submitting registration form...');
+      
       const result = await register(
         formData.name,
         formData.email,
@@ -101,11 +194,21 @@ const Register = () => {
       } else if (err.message?.includes('CORS')) {
         setError('CORS error: please enable CORS on the backend.');
       } else {
-        setError('Unexpected error occurred. Please try again.');
+        // Show error modal
+        showModal(
+          'error',
+          'Registration Failed',
+          result.message || 'Unable to create account. Please check your information and try again.'
+        );
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  const goToLogin = () => {
+    closeModal();
+    navigate('/login');
   };
 
   return (
@@ -287,6 +390,28 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      {/* Status Modal */}
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={handleModalClose}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        autoClose={modal.type === 'success'}
+        autoCloseDelay={4000}
+        actionButton={
+          modal.type === 'success' ? (
+            <button 
+              onClick={goToLogin}
+              className="submit-btn"
+              style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+            >
+              Go to Login
+            </button>
+          ) : null
+        }
+      />
     </div>
   );
 };
