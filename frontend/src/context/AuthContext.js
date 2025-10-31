@@ -56,9 +56,9 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
   // Register function
-  const register = async (name, email, password, role) => {
+  const register = async (name, email, password, role,capturedImage) => {
     try {
-      console.log('Attempting registration with:', { name, email, role });
+      console.log('Attempting registration with:', { name, email, role,capturedImagePresent: !!capturedImage});
       
       const response = await fetch(`http://localhost:5000/api/auth/register`, {
         method: 'POST',
@@ -69,7 +69,8 @@ export const AuthProvider = ({ children }) => {
           name,
           email,
           password,
-          role
+          role,
+          capturedImage,  // change was made here
         }),
       });
 
