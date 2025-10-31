@@ -495,3 +495,130 @@
   color: #1e40af;
   font-weight: 700;
 }
+
+
+/* ============================= */
+/* Webcam Capture Section Styles */
+/* ============================= */
+
+.camera-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:  white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.webcam-view {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  border: 2px solid #3b82f6;
+  object-fit: cover;
+  background: #f9fafb;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.capture-btn,
+.cancel-btn,
+.retake-btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 200px;
+  margin-top: 0.5rem;
+}
+
+/* Primary Capture Button */
+.capture-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+.capture-btn:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Cancel Button */
+.cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+/* Retake Button (after capture) */
+.retake-btn {
+  background: #1353c9;
+  color: white;
+}
+
+.retake-btn:hover {
+  background: #d97706;
+}
+
+/* Captured Preview */
+.captured-preview {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  border: 2px solid #3b82f6;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Smooth fade-in for camera UI */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .camera-section {
+    padding: 1.25rem;
+  }
+
+  .webcam-view,
+  .captured-preview {
+    max-width: 100%;
+  }
+
+  .capture-btn,
+  .cancel-btn,
+  .retake-btn {
+    max-width: 100%;
+  }
+}
+/* Fix: Center Retake Photo button like Capture Image */
+.form-group .retake-btn {
+  display: block;
+  margin: 0 110px 0 auto;
+  width: 100%;
+  max-width: 200px;
+  text-align: center;
+}

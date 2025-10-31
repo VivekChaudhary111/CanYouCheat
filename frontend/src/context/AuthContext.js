@@ -56,47 +56,62 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
   // Register function
-  const register = async (name, email, password, role) => {
+  const register = async (name, email, password, role, live_photo_base64) => {
     try {
-      console.log('Attempting registration with:', { name, email, role });
-      
-      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+      // Only require photo for students
+      if (role === 'student' && !live_photo_base64) {
+        return {
+          success: false,
+          message: 'Photo verification is required for student registration'
+        };
+      }
+
+      const systemInfo = {
+        userAgent: navigator.userAgent,
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      };
+
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           name,
           email,
           password,
-          role
-        }),
+          role,
+          live_photo_base64: role === 'student' ? live_photo_base64 : null, // Only send photo for students
+          systemInfo
+        })
       });
 
-      console.log('Registration response status:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Registration failed:', errorData);
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      console.log('Registration successful:', data);
 
-      return {
-        success: true,
-        message: data.message || 'Registration successful',
-        data
-      };
+      if (response.ok && data.success) {
+        // Auto-login after successful registration
+        if (data.token && data.user) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          setToken(data.token);
+          setUser(data.user);
+          setIsAuthenticated(true);
+        }
+
+        return {
+          success: true,
+          user: data.user,
+          message: 'Registration successful'
+        };
+      } else {
+        throw new Error(data.message || 'Registration failed');
+      }
     } catch (error) {
-      console.error('Registration error:', error);
-      
-      // Return structured error response
+      console.error('❌ Registration error:', error);
       return {
         success: false,
-        message: error.message || 'Registration failed. Please try again.',
-        error: error
+        message: error.message || 'Registration failed. Please try again.'
       };
     }
   };

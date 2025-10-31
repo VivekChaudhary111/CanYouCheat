@@ -71,8 +71,10 @@ const userSchema = new mongoose.Schema({
   // --- NEW FIELD FOR FACE VERIFICATION ---
   referenceImage: {
     type: String, // Store the Base64 image string captured during registration
-    required: [true, 'Reference image is required for identity verification'], // Make it mandatory
-    default: null // Should be set during registration
+    required: [
+      function () { return this.role === 'student'; },
+      'Reference image is required for identity verification'
+    ]
   },
   // --- End of New Field ---
   // AI Proctoring preferences

@@ -7,8 +7,18 @@ const User = require('../models/User');
 const router = express.Router();
 
 // Register route - requires all fields for AI proctoring system
-router.post('/register', validateRequest(['name', 'email', 'password', 'role', 'live_photo_base64']), register);
-
+router.post(
+  '/register',
+  validateRequest((req) => {
+    const base = ['name', 'email', 'password', 'role'];
+    // if you need TIN for students, include it here
+    if (req.body?.role === 'student') {
+      base.push('live_photo_base64');
+    }
+    return base;
+  }),
+  register
+);
 // Login route - role-based authentication for students and instructors
 router.post('/login', validateRequest(['email', 'password', 'role']), login);
 

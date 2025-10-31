@@ -2,6 +2,7 @@ const Exam = require('../models/Exam');
 const ExamSession = require('../models/ExamSession');
 const ExamSubmission = require('../models/ExamSubmission');
 const User = require('../models/User');
+const { verifyFacesWithAI } = require('../services/aiService');
 
 console.log('🔧 Loading AI Proctoring Exam Controller...');
 // --- ADD THIS ENTIRE FUNCTION ---
@@ -9,10 +10,10 @@ const verifyIdentity = async (req, res) => {
   console.log(`🔵 Received identity verification request for exam: ${req.params.examId} by user: ${req.user.id}`);
   try {
     const studentId = req.user.id; // Get student ID from the 'auth' middleware
-    const { live_image_base_64 } = req.body; // Get the live image sent from React
+    const { live_image_base64 } = req.body; // Get the live image sent from React (matches frontend)
 
     // --- Input Validation ---
-    if (!live_image_base_64) {
+    if (!live_image_base64) {
       console.log('❌ Verification failed: Missing live image.');
       return res.status(400).json({ success: false, message: 'Live image is required.' });
     }
@@ -29,18 +30,8 @@ const verifyIdentity = async (req, res) => {
     console.log('✅ Reference image fetched successfully.');
 
     // --- 2. Call Python AI Service ---
-    const aiServiceUrl = 'http://localhost:8000/verify_face'; // Your Python service URL
-    console.log(`🧠 Sending images to AI service at ${aiServiceUrl}`);
-
-    const aiResponse = await axios.post(aiServiceUrl, {
-      live_image_base_64,       // Send the live image from React
-      reference_image_base_64 // Send the reference image from DB
-    }, {
-      timeout: 15000 // Increase timeout to 15 seconds for face verification
-    });
-
-    // --- 3. Process AI Response ---
-    const verificationResult = aiResponse.data;
+    console.log('🧠 Sending images to AI service for verification');
+    const verificationResult = await verifyFacesWithAI(live_image_base64, reference_image_base_64);
     console.log('✅ Received verification result from AI:', verificationResult);
 
     // Basic check on the response structure
@@ -301,9 +292,33 @@ const getExamById = async (req, res) => {
 const startExamSession = async (req, res) => {
   try {
     const { examId } = req.params;
-    const { browserInfo } = req.body;
-    
+    const { browserInfo, live_image_base64 } = req.body;
+
     console.log(`🚀 Starting AI-monitored exam session for exam: ${examId}`);
+
+    // Enforce pre-exam face verification
+    if (!live_image_base64) {
+      return res.status(400).json({
+        success: false,
+        message: 'Face verification required: live_image_base64 is missing.'
+      });
+    }
+    // Fetch the student's reference image
+    const student = await User.findById(req.user.id).select('referenceImage');
+    if (!student || !student.referenceImage) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reference image not found for this user. Please ensure you completed registration correctly.'
+      });
+    }
+    const verificationResult = await verifyFacesWithAI(live_image_base64, student.referenceImage);
+    if (!verificationResult.verified) {
+      return res.status(401).json({
+        success: false,
+        message: 'Face verification failed. You do not appear to match your registered profile. Please try again.',
+        details: verificationResult
+      });
+    }
 
     // Verify exam exists and is accessible
     const exam = await Exam.findById(examId);

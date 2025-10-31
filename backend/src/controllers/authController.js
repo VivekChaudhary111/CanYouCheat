@@ -9,16 +9,8 @@ exports.register = async (req, res) => {
   try {
     console.log('🔵 Registration attempt started for AI proctoring system');
     // <-- NEW: Extract live_photo_base64
-    const { name, email, password, role, live_photo_base64 } = req.body;
 
-    // Validate input for AI proctoring system
-    // <-- NEW: Added live_photo_base64 to the check
-    if (!name || !email || !password || !role || !live_photo_base64) {
-      return res.status(400).json({
-        message: 'All fields (name, email, password, role, live_photo_base64) are required for AI proctoring registration'
-      });
-    }
-
+    const { name, email, password, role,live_photo_base64} = req.body;
     // Validate role for AI proctoring system (student/instructor)
     if (!['student', 'instructor'].includes(role)) {
       return res.status(400).json({
@@ -38,7 +30,7 @@ exports.register = async (req, res) => {
       name: name.trim(),
       email: email.toLowerCase().trim(),
       role: role,
-      referenceImage: live_photo_base64 // <-- NEW: Assign photo to the correct schema field
+      referenceImage: role === 'instructor' ? live_photo_base64 : "",
     });
 
     // Register with passport-local-mongoose (handles hashing automatically)

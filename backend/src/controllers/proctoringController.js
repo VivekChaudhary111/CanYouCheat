@@ -1,4 +1,6 @@
 const ProctoringSession = require('../models/ProctoringSession');
+const { analyzeFrameWithAI } = require('../services/aiService');
+const path = require('path');
 
 // Get proctoring sessions for instructor dashboard
 exports.getProctoringSessions = async (req, res) => {
@@ -117,5 +119,30 @@ exports.saveProctoringSession = async (sessionData) => {
   } catch (error) {
     console.error('Error saving proctoring session:', error);
     throw error;
+  }
+};
+
+// Analyze a single webcam frame via Python AI service
+exports.analyzeFrame = async (req, res) => {
+  try {
+    let imageBuffer;
+
+    if (req.is('application/json') && req.body && req.body.image) {
+      // Expecting data URL like "data:image/jpeg;base64,......."
+      const base64 = String(req.body.image).split(',').pop();
+      imageBuffer = Buffer.from(base64, 'base64');
+    } else if (req.file) {
+      imageBuffer = req.file.buffer;
+    }
+
+    if (!imageBuffer) {
+      return res.status(400).json({ message: 'No image provided' });
+    }
+
+    const aiResult = await analyzeFrameWithAI(imageBuffer);
+    return res.json({ success: true, result: aiResult });
+  } catch (error) {
+    console.error('Error analyzing frame with AI:', error.response?.data || error.message);
+    return res.status(500).json({ success: false, message: 'AI analysis failed' });
   }
 };

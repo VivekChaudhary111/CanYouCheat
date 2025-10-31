@@ -18,7 +18,7 @@ function WebcamProctor() {
             canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
             const imageData = canvas.toDataURL('image/png')
 
-            axios.post('https://your-backend-api.com/upload-image', { image: imageData })
+            axios.post('http://localhost:5000/api/proctoring/analyze-frame', { image: imageData }, { withCredentials: true })
                 .then(() => console.log('Image sent'))
                 .catch(err => console.error(err))
         }

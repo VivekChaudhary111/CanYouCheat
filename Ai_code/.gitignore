@@ -6,3 +6,7 @@ __pycache__/
 *.pyc
 .DS_Store
 .env
+node_modules
+L2CSNet_gaze360.pkl
+package-lock.json
+yolov8n.pt
