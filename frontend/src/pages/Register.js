@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import StatusModal from '../components/StatusModal';
@@ -24,9 +24,6 @@ const Register = () => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
 
-  // Handle input change
-  
-  // Modal state
   const [modal, setModal] = useState({
     isOpen: false,
     type: '',
@@ -34,146 +31,87 @@ const Register = () => {
     message: ''
   });
 
+  // ✅ Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-
-    // Clear error when user types
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError('');
 
-    if (name === 'password') {
-      checkPasswordStrength(value);
-    }
+    if (name === 'password') checkPasswordStrength(value);
   };
 
-  // Password strength checker
+  // ✅ Password strength checker
   const checkPasswordStrength = (password) => {
-    if (password.length === 0) {
-      setPasswordStrength('');
-      return;
-    }
-    
-    if (password.length < 6) {
-      setPasswordStrength('weak');
-    } else if (password.length < 10) {
-      setPasswordStrength('medium');
-    } else {
-      setPasswordStrength('strong');
-    }
+    if (!password) return setPasswordStrength('');
+    if (password.length < 6) setPasswordStrength('weak');
+    else if (password.length < 10) setPasswordStrength('medium');
+    else setPasswordStrength('strong');
   };
 
+  // ✅ Validate form
   const validateForm = () => {
-    if (!formData.name.trim()) {
-      return 'Full name is required';
-    }
-
-    if (!formData.email.trim()) {
-      return 'Email is required';
-    }
-
+    if (!formData.name.trim()) return 'Full name is required';
+    if (!formData.email.trim()) return 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      return 'Please enter a valid email address';
-    }
-
-    if (!formData.password) {
-      return 'Password is required';
-    }
-
-    if (formData.password.length < 6) {
+    if (!emailRegex.test(formData.email)) return 'Enter a valid email';
+    if (!formData.password) return 'Password is required';
+    if (formData.password.length < 6)
       return 'Password must be at least 6 characters long';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword)
       return 'Passwords do not match';
-    }
-
     return null;
   };
 
-  const showModal = (type, title, message) => {
-    setModal({
-      isOpen: true,
-      type,
-      title,
-      message
-    });
-  };
-
-  const closeModal = () => {
-    setModal({
-      isOpen: false,
-      type: '',
-      title: '',
-      message: ''
-    });
-  };
-
-  const handleModalClose = () => {
-    closeModal();
-    if (modal.type === 'success') {
-      navigate('/login');
-    }
-  };
-
-
-  // Capture image from webcam
-  const captureImage = () => {
+  // ✅ Capture image (safe with fallback)
+  const captureImage = useCallback(() => {
+    if (!webcamRef.current) return;
     const imageSrc = webcamRef.current.getScreenshot();
+    if (!imageSrc) {
+      setError('Unable to capture image. Please allow camera access and try again.');
+      return;
+    }
+    console.log('📸 Captured Base64 Image:', imageSrc);
     setCapturedImage(imageSrc);
     setCameraOpen(false);
-  };
+  }, []);
 
   const retakeImage = () => {
     setCapturedImage(null);
     setCameraOpen(true);
   };
 
-  // Handle form submit
+  // ✅ Modal helpers
+  const showModal = (type, title, message) =>
+    setModal({ isOpen: true, type, title, message });
+
+  const closeModal = () =>
+    setModal({ isOpen: false, type: '', title: '', message: '' });
+
+  const handleModalClose = () => {
+    closeModal();
+    if (modal.type === 'success') navigate('/login');
+  };
+
+  // ✅ Handle registration submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Validate form
     const validationError = validateForm();
-    if (validationError) {
-      showModal(
-        'error',
-        'Registration Failed',
-        validationError
-      );
-      return;
-    }
-
-    // If student — open camera first if not yet captured
-    if (formData.role === 'student' && !capturedImage && !cameraOpen) {
-      setCameraOpen(true);
-      return;
-    }
+    if (validationError)
+      return showModal('error', 'Registration Failed', validationError);
 
     if (formData.role === 'student' && !capturedImage) {
-      setError('Please capture your face image before registration.');
-      return;
-    }
-
-    // If student — open camera first if not yet captured
-    if (formData.role === 'student' && !capturedImage && !cameraOpen) {
-      setCameraOpen(true);
-      return;
-    }
-
-    if (formData.role === 'student' && !capturedImage) {
-      setError('Please capture your face image before registration.');
+      if (!cameraOpen) setCameraOpen(true);
+      else setError('Please capture your face before registration.');
       return;
     }
 
     setLoading(true);
     try {
-      console.log('Submitting registration form...');
-      
+      console.log('📸 Captured Image Type:', typeof capturedImage);
+      console.log('🟢 Sending registration request...');
+
       const result = await register(
         formData.name,
         formData.email,
@@ -183,24 +121,13 @@ const Register = () => {
       );
 
       if (result?.success) {
-        navigate('/login');
+        showModal('success', 'Registration Successful', 'Welcome aboard!');
       } else {
-        setError(result?.message || 'Registration failed. Please try again.');
+        showModal('error', 'Registration Failed', result?.message || 'Try again later.');
       }
     } catch (err) {
       console.error('Registration error:', err);
-      if (err.message?.includes('Failed to fetch')) {
-        setError('Cannot connect to server. Please check if backend is running.');
-      } else if (err.message?.includes('CORS')) {
-        setError('CORS error: please enable CORS on the backend.');
-      } else {
-        // Show error modal
-        showModal(
-          'error',
-          'Registration Failed',
-          result.message || 'Unable to create account. Please check your information and try again.'
-        );
-      }
+      showModal('error', 'Server Error', err.message || 'Please try again.');
     } finally {
       setLoading(false);
     }
@@ -230,11 +157,6 @@ const Register = () => {
             <p className="brand-description">
               Join the next generation of secure online examination
             </p>
-            <div className="features-list">
-              <div className="feature-item"><span>Secure exam environment</span></div>
-              <div className="feature-item"><span>Real-time monitoring</span></div>
-              <div className="feature-item"><span>Comprehensive reporting</span></div>
-            </div>
           </div>
         </div>
 
@@ -245,11 +167,7 @@ const Register = () => {
               <p className="card-subtitle">Join our AI proctoring platform</p>
             </div>
 
-            {error && (
-              <div className="error-message" role="alert">
-                <span>{error}</span>
-              </div>
-            )}
+            {error && <div className="error-message">{error}</div>}
 
             {!cameraOpen ? (
               <form onSubmit={handleSubmit} className="auth-form">
@@ -270,103 +188,66 @@ const Register = () => {
                           onChange={handleChange}
                           disabled={loading}
                         />
-                        <div className="role-content">
-                          <span className="role-title">
-                            {role.charAt(0).toUpperCase() + role.slice(1)}
-                          </span>
-                        </div>
+                        <span>{role}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                {/* Name */}
-                <div className="form-group">
-                  <label htmlFor="name" className="form-label">Full Name</label>
-                  <input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
+                {/* Inputs */}
+                <input
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
 
-                {/* Email */}
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">Email Address</label>
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-
-                {/* Password */}
-                <div className="form-group">
-                  <label htmlFor="password" className="form-label">Password</label>
-                  <input
-                    id="password"
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder="Create a password"
-                    required
-                  />
-                  {passwordStrength && (
-                    <div className={`password-strength ${passwordStrength}`}>
-                      Password strength: {passwordStrength}
-                    </div>
-                  )}
-                </div>
-
-                {/* Confirm Password */}
-                <div className="form-group">
-                  <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder="Confirm your password"
-                    required
-                  />
-                </div>
-
-                {/* Face Capture Preview */}
+                {/* Captured face preview */}
                 {formData.role === 'student' && capturedImage && (
                   <div className="form-group">
-                    <label className="form-label">Captured Face Image</label>
+                    <label>Captured Face</label>
                     <img src={capturedImage} alt="Captured" className="captured-preview" />
-                    <button type="button" className="retake-btn" onClick={retakeImage}>
+                    <button type="button" onClick={retakeImage} className="retake-btn">
                       Retake Photo
                     </button>
                   </div>
                 )}
 
-                {/* Submit */}
-                <button type="submit" disabled={loading} className={`submit-btn ${loading ? 'loading' : ''}`}>
+                <button type="submit" disabled={loading} className="submit-btn">
                   {loading
-                    ? (
-                      <>
-                        <span className="loading-spinner"></span>
-                        Creating Account...
-                      </>
-                    )
+                    ? 'Creating Account...'
                     : formData.role === 'student' && !capturedImage
-                      ? 'Capture Face'
-                      : 'Create Account'}
+                    ? 'Capture Face'
+                    : 'Create Account'}
                 </button>
               </form>
             ) : (
@@ -374,6 +255,10 @@ const Register = () => {
                 <Webcam
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
+                  width={350}
+                  height={250}
+                  audio={false}
+                  videoConstraints={{ facingMode: 'user' }}
                   className="webcam-view"
                 />
                 <button onClick={captureImage} className="capture-btn">Capture Image</button>
@@ -382,7 +267,7 @@ const Register = () => {
             )}
 
             <div className="card-footer">
-              <p className="footer-text">
+              <p>
                 Already have an account?{' '}
                 <Link to="/login" className="footer-link">Sign in</Link>
               </p>
@@ -391,7 +276,6 @@ const Register = () => {
         </div>
       </div>
 
-      {/* Status Modal */}
       <StatusModal
         isOpen={modal.isOpen}
         onClose={handleModalClose}
@@ -402,13 +286,7 @@ const Register = () => {
         autoCloseDelay={4000}
         actionButton={
           modal.type === 'success' ? (
-            <button 
-              onClick={goToLogin}
-              className="submit-btn"
-              style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-            >
-              Go to Login
-            </button>
+            <button onClick={goToLogin} className="submit-btn">Go to Login</button>
           ) : null
         }
       />

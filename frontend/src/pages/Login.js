@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import "./Auth.css";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import StatusModal from '../components/StatusModal';
+import './Auth.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    role: "student",
+    email: '',
+    password: '',
+    role: 'student'
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [preventAutoRedirect, setPreventAutoRedirect] = useState(false); // Add this flag
-  
+  const [preventAutoRedirect, setPreventAutoRedirect] = useState(false);
+
   // Modal state
   const [modal, setModal] = useState({
     isOpen: false,
@@ -25,40 +26,121 @@ const Login = () => {
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  // Modified useEffect to respect the prevent redirect flag
+  // Redirect when authenticated, but respect preventAutoRedirect flag
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate("/dashboard");
+    if (isAuthenticated && user && !preventAutoRedirect) {
+      navigate('/dashboard');
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, preventAutoRedirect]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+  const showModal = (type, title, message) => {
+    setModal({
+      isOpen: true,
+      type,
+      title,
+      message
     });
+  };
+
+  const closeModal = () => {
+    setModal({
+      isOpen: false,
+      type: '',
+      title: '',
+      message: ''
+    });
+  };
+
+  // Called when the StatusModal requests close (X, backdrop, or auto-close)
+  const handleModalClose = () => {
+    closeModal();
+
+    // If it was a successful login, go to dashboard
+    if (modal.type === 'success') {
+      setPreventAutoRedirect(false);
+      navigate('/dashboard');
+    }
+  };
+
+  // Used by the action button inside the modal to explicitly go to dashboard
+  const goToDashboard = () => {
+    closeModal();
+    setPreventAutoRedirect(false);
+    navigate('/dashboard');
+  };
+
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      return 'Email is required';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      return 'Password is required';
+    }
+
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError('');
+
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      showModal('error', 'Login Failed', validationError);
+      setLoading(false);
+      return;
+    }
 
     try {
-      const result = await login(
-        formData.email,
-        formData.password,
-        formData.role
-      );
+      // Prevent automatic redirect until user closes modal or presses action
+      setPreventAutoRedirect(true);
 
-      if (!result.success) {
-        setError(result.message || "Login failed");
+      const result = await login(formData.email, formData.password, formData.role);
+
+      if (result && result.success) {
+        showModal(
+          'success',
+          'Login Successful',
+          `Welcome back! You are now signed in to your ${formData.role} dashboard.`
+        );
+      } else {
+        // On login failure, allow auto-redirect in future attempts (not necessary, but safe)
+        setPreventAutoRedirect(false);
+        showModal(
+          'error',
+          'Login Failed',
+          (result && result.message) || 'Invalid credentials. Please check your email and password and try again.'
+        );
       }
-    } catch (error) {
-      setError("Network error. Please try again.");
+    } catch (err) {
+      console.error('Unexpected login error:', err);
+      setPreventAutoRedirect(false);
+      showModal(
+        'error',
+        'Network Error',
+        'Unable to connect to the server. Please check your internet connection and try again.'
+      );
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+
+    // Clear inline error when user types
+    if (error) setError('');
   };
 
   return (
@@ -72,10 +154,7 @@ const Login = () => {
           <div className="brand-content">
             <div className="brand-logo">
               <div className="logo-icon">
-                <img
-                  src="../android-chrome-512x512.png"
-                  alt="CanYouCheat Logo"
-                />
+                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
               </div>
               <h1 className="brand-title">CanYouCheat</h1>
             </div>
@@ -83,6 +162,21 @@ const Login = () => {
             <p className="brand-description">
               Advanced AI monitoring for secure remote examinations
             </p>
+
+            <div className="features-list">
+              <div className="feature-item">
+                <span>Real-time behavior analysis</span>
+              </div>
+              <div className="feature-item">
+                <span>Eye tracking technology</span>
+              </div>
+              <div className="feature-item">
+                <span>AI-powered risk assessment</span>
+              </div>
+              <div className="feature-item">
+                <span>Audio anomaly detection</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -98,42 +192,36 @@ const Login = () => {
                 <label htmlFor="role" className="form-label">
                   Account Type
                 </label>
-                <div className="role-options">
-                  <label
-                    className={`role-option ${
-                      formData.role === "student" ? "active" : ""
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="role"
-                      value="student"
-                      checked={formData.role === "student"}
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-                    <div className="role-content">
-                      <span className="role-title">Student</span>
-                    </div>
-                  </label>
+                <div className="role-selection">
+                  <div className="role-options">
+                    <label className={`role-option ${formData.role === 'student' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="role"
+                        value="student"
+                        checked={formData.role === 'student'}
+                        onChange={handleChange}
+                        disabled={loading}
+                      />
+                      <div className="role-content">
+                        <span className="role-title">Student</span>
+                      </div>
+                    </label>
 
-                  <label
-                    className={`role-option ${
-                      formData.role === "instructor" ? "active" : ""
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="role"
-                      value="instructor"
-                      checked={formData.role === "instructor"}
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-                    <div className="role-content">
-                      <span className="role-title">Instructor</span>
-                    </div>
-                  </label>
+                    <label className={`role-option ${formData.role === 'instructor' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="role"
+                        value="instructor"
+                        checked={formData.role === 'instructor'}
+                        onChange={handleChange}
+                        disabled={loading}
+                      />
+                      <div className="role-content">
+                        <span className="role-title">Instructor</span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -162,7 +250,7 @@ const Login = () => {
                 </label>
                 <div className="input-wrapper">
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
                     value={formData.password}
@@ -178,14 +266,16 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={loading}
                   >
-                    {showPassword ? "Hide" : "Show"}
+                    {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
 
+              {error && <p className="form-error">{error}</p>}
+
               <button
                 type="submit"
-                className={`submit-btn ${loading ? "loading" : ""}`}
+                className={`submit-btn ${loading ? 'loading' : ''}`}
                 disabled={loading}
               >
                 {loading ? (
@@ -201,7 +291,7 @@ const Login = () => {
 
             <div className="card-footer">
               <p className="footer-text">
-                Don't have an account?{" "}
+                Don't have an account?{' '}
                 <Link to="/register" className="footer-link">
                   Create one here
                 </Link>
@@ -222,7 +312,7 @@ const Login = () => {
         autoCloseDelay={4000}
         actionButton={
           modal.type === 'success' ? (
-            <button 
+            <button
               onClick={goToDashboard}
               className="submit-btn"
               style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}

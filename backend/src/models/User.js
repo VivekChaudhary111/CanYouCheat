@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema({
     },
     flaggedBehaviors: [String]
   }],
-  profilePicture: {
+  capturedImage: {
     type: String, // URL to stored image for face recognition
     default: null
   },

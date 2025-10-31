@@ -8,7 +8,7 @@ console.log('🔧 Loading Auth Controller for AI Proctoring System...');
 exports.register = async (req, res) => {
   try {
     console.log('🔵 Registration attempt started for AI proctoring system');
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role ,capturedImage} = req.body;
 
     // Validate input for AI proctoring system
     if (!name || !email || !password || !role) {
@@ -35,7 +35,8 @@ exports.register = async (req, res) => {
     const newUser = new User({
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      role: role
+      role: role,
+      capturedImage:capturedImage
     });
 
     // Register with passport-local-mongoose (handles hashing automatically)
@@ -44,7 +45,8 @@ exports.register = async (req, res) => {
     console.log('✅ User registered successfully for AI proctoring:', {
       id: registeredUser._id,
       email: registeredUser.email,
-      role: registeredUser.role
+      role: registeredUser.role,
+      capturedImage:registeredUser.capturedImage
     });
 
     // Generate JWT for immediate login in AI proctoring system
