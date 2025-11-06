@@ -7,11 +7,15 @@
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1",
     "react-scripts": "5.0.1",
+    "react-webcam": "^7.2.0",
     "socket.io-client": "^4.8.1",
+    "tailwindcss": "^3.3.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -39,7 +43,10 @@
     ]
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.37.0",
-    "eslint-plugin-react": "^7.37.5"
+    "eslint-plugin-react": "^7.37.5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16"
   }
 }

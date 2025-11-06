@@ -1,6 +1,7 @@
 const http = require('http');
 const socketIo = require('socket.io');
 const app = require('./app');
+const { analyzeFrameWithAI } = require('./services/aiService');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
@@ -32,9 +33,9 @@ io.on('connection', (socket) => {
   });
 
   // Handle webcam frames for AI analysis
-  socket.on('webcam-frame', (data) => {
+  socket.on('webcam-frame', async (data) => {
     const { sessionId, frameData, timestamp } = data;
-    
+
     // Broadcast to proctors monitoring this session
     socket.to(sessionId).emit('student-frame', {
       studentId: socket.id,
@@ -42,8 +43,18 @@ io.on('connection', (socket) => {
       timestamp
     });
 
-    // TODO: Send frame to AI analysis service
-    // This will be connected to your AI behavior analyzer
+    try {
+      const base64 = String(frameData).split(',').pop();
+      const buffer = Buffer.from(base64, 'base64');
+      const aiResult = await analyzeFrameWithAI(buffer);
+      socket.to(sessionId).emit('ai-analysis-result', {
+        studentId: socket.id,
+        result: aiResult,
+        timestamp
+      });
+    } catch (err) {
+      console.error('AI analysis error:', err.message);
+    }
   });
 
   // Handle AI analysis results

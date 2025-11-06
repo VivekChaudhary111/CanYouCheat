@@ -11,6 +11,8 @@ import { useExamTimer } from './hooks/useExamTimer';
 import { useWebcamAccess } from './hooks/useWebcamAccess';
 import { useExamSubmission } from './hooks/useExamSubmission';
 import './ExamTaking.css';
+import ReactWebcam from "react-webcam";
+import { useRef } from "react";
 
 const ExamTaking = () => {
   const { examId } = useParams();
@@ -28,6 +30,10 @@ const ExamTaking = () => {
   const [error, setError] = useState('');
   const [warnings, setWarnings] = useState([]);
   const [sessionId, setSessionId] = useState(null);
+  const webcamRef = useRef(null);
+  const [isVerified, setIsVerified] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
 
   // Custom hooks
   const { timeRemaining, startTimer, stopTimer, formatTime } = useExamTimer();
@@ -138,7 +144,7 @@ const ExamTaking = () => {
     }
   }, [timeRemaining, examStarted, handleAutoSubmit]);
 
-  const createExamSession = async () => {
+  const createExamSession = async (live_image_base64) => {
     try {
       const response = await fetch(`http://localhost:5000/api/exams/${examId}/start-session`, {
         method: 'POST',
@@ -147,18 +153,15 @@ const ExamTaking = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          studentId: user.id,
           browserInfo: {
             userAgent: navigator.userAgent,
-            // Fixed: Use window.screen instead of global screen
             screenResolution: `${window.screen.width}x${window.screen.height}`,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          }
+          },
+          live_image_base64
         })
       });
-
       const data = await response.json();
-      
       if (response.ok) {
         setSessionId(data.sessionId);
         return data.sessionId;
@@ -187,20 +190,56 @@ const ExamTaking = () => {
     }
   };
 
-  const handleStartExam = async () => {
+  // Handler for Capture & Verify
+  const handleCaptureAndVerify = async () => {
+    setVerifying(true);
+    setVerificationError("");
+    const live_image_base64 = webcamRef.current?.getScreenshot?.();
+    if (!live_image_base64) {
+      setVerificationError("Could not open webcam or capture image.");
+      setVerifying(false);
+      return;
+    }
     try {
-      const newSessionId = await createExamSession();
-      if (!newSessionId) return;
-
-      setExamStarted(true);
-      startTimer(exam.duration * 60); // Convert minutes to seconds
-      
-      // Add warning for exam start
-      addWarning('Exam started. You are now being monitored.');
-      
+      const response = await fetch(`http://localhost:5000/api/exams/${examId}/verify-identity`, {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ live_image_base64 })
+      });
+      const data = await response.json();
+      if (response.ok && data.success && data.verified) {
+        setIsVerified(true);
+        setVerificationError("");
+      } else {
+        setIsVerified(false);
+        setVerificationError(data.message || "Verification failed. Try again.");
+      }
     } catch (error) {
-      console.error('Error starting exam:', error);
-      setError('Failed to start exam. Please try again.');
+      setIsVerified(false);
+      setVerificationError("Verification failed. Try again.");
+    }
+    setVerifying(false);
+  };
+
+  // Handler for START EXAM button - recaptures image for extra security!
+  const handleStartExam = async () => {
+    const live_image_base64 = webcamRef.current?.getScreenshot?.();
+    if (!live_image_base64) {
+      setError("Webcam not ready for exam start. Please refresh or check your camera.");
+      return;
+    }
+    try {
+      // Update createExamSession to accept image and pass it
+      const newSessionId = await createExamSession(live_image_base64);
+      if (!newSessionId) return;
+      setExamStarted(true);
+      startTimer(exam.duration * 60);
+      addWarning('Exam started. You are now being monitored.');
+    } catch (err) {
+      setError("Could not start exam. Try again.");
     }
   };
 
@@ -392,13 +431,16 @@ const ExamTaking = () => {
             </div>
 
             <div className="webcam-preview">
-              <WebcamMonitor 
-                stream={webcamStream}
-                isActive={isWebcamActive}
-                error={webcamError}
-                compact={false}
+              <ReactWebcam
+                ref={webcamRef}
+                audio={false}
+                screenshotFormat="image/jpeg"
+                width={320}
+                height={240}
+                className="student-verification-webcam"
               />
             </div>
+            {verificationError && <div className="error-message verification-error">{verificationError}</div>}
 
             <div className="start-exam-actions">
               <button 
@@ -407,13 +449,26 @@ const ExamTaking = () => {
               >
                 Cancel
               </button>
-              <button 
-                className="btn btn-primary btn-large"
-                onClick={handleStartExam}
-                disabled={!isWebcamActive}
-              >
-                Start Proctored Exam
-              </button>
+              {!isVerified && (
+                <button 
+                  className="btn btn-primary btn-large"
+                  onClick={handleCaptureAndVerify}
+                  disabled={verifying}
+                >
+                  {verifying ? 'Verifying...' : 'Capture & Verify'}
+                </button>
+              )}
+              {isVerified && (
+                <>
+                  <div className="verification-success">✅ Verification successful!</div>
+                  <button 
+                    className="btn btn-success btn-large"
+                    onClick={handleStartExam}
+                  >
+                    Start Proctored Exam
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

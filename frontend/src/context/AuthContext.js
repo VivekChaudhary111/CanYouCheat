@@ -25,12 +25,12 @@ export const AuthProvider = ({ children }) => {
 
         if (storedToken && storedUser) {
           const userData = JSON.parse(storedUser);
-          
+
           // Verify token is still valid by checking with backend
           const response = await fetch('http://localhost:5000/api/auth/verify', {
             headers: {
-              'Authorization': `Bearer ${storedToken}`
-            }
+              Authorization: `Bearer ${storedToken}`,
+            },
           });
 
           if (response.ok) {
@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             console.log('🔄 Session restored for:', userData.name);
           } else {
-            // Token invalid, clear storage
             localStorage.removeItem('token');
             localStorage.removeItem('user');
           }
@@ -55,56 +54,65 @@ export const AuthProvider = ({ children }) => {
 
     initializeAuth();
   }, []);
-  // Register function
-  const register = async (name, email, password, role,capturedImage) => {
+
+  // ✅ Register function
+  const register = async (name, email, password, role, capturedImage) => {
     try {
-      console.log('Attempting registration with:', { name, email, role,capturedImagePresent: !!capturedImage});
-      
-      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+      console.log('Attempting registration with:', { name, email, role, capturedImagePresent: !!capturedImage });
+
+      const systemInfo = {
+        userAgent: navigator.userAgent,
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      };
+
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
           email,
           password,
           role,
-          capturedImage,  // change was made here
+          capturedImage, // webcam photo
+          systemInfo,
         }),
       });
 
-      console.log('Registration response status:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Registration failed:', errorData);
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      console.log('Registration successful:', data);
 
-      return {
-        success: true,
-        message: data.message || 'Registration successful',
-        data
-      };
+      if (response.ok && data.success) {
+        // Auto-login after successful registration
+        if (data.token && data.user) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          setToken(data.token);
+          setUser(data.user);
+          setIsAuthenticated(true);
+        }
+
+        return {
+          success: true,
+          user: data.user,
+          message: 'Registration successful',
+        };
+      } else {
+        throw new Error(data.message || 'Registration failed');
+      }
     } catch (error) {
-      console.error('Registration error:', error);
-      
-      // Return structured error response
+      console.error('❌ Registration error:', error);
       return {
         success: false,
         message: error.message || 'Registration failed. Please try again.',
-        error: error
       };
     }
   };
+
+  // ✅ Login function
   const login = async (email, password, role) => {
     try {
       setLoading(true);
-      
+
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,17 +122,11 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store in localStorage first
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-
-        // Then update state - THIS IS THE KEY FIX
-        await new Promise(resolve => {
-          setToken(data.token);
-          setUser(data.user);
-          setIsAuthenticated(true);
-          resolve();
-        });
+        setToken(data.token);
+        setUser(data.user);
+        setIsAuthenticated(true);
 
         console.log('✅ Login successful for:', data.user.name);
         return { success: true, user: data.user };
@@ -155,7 +157,6 @@ export const AuthProvider = ({ children }) => {
     console.log('🔄 User data updated for:', newUserData.name);
   };
 
-  // Add computed role properties
   const isInstructor = user?.role === 'instructor';
   const isStudent = user?.role === 'student';
   const isAdmin = user?.role === 'admin';
@@ -171,12 +172,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    updateUser
+    updateUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

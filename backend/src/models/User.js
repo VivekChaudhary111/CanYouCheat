@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     default: 'student'
   },
-   bio: {
+  bio: {
     type: String,
     maxlength: [500, 'Bio cannot exceed 500 characters']
   },
@@ -64,10 +64,19 @@ const userSchema = new mongoose.Schema({
     },
     flaggedBehaviors: [String]
   }],
-  capturedImage: {
-    type: String, // URL to stored image for face recognition
+  profilePicture: {
+    type: String, // URL to stored image (optional, cosmetic)
     default: null
   },
+  // --- NEW FIELD FOR FACE VERIFICATION ---
+  referenceImage: {
+    type: String, // Store the Base64 image string captured during registration
+    required: [
+      function () { return this.role === 'student'; },
+      'Reference image is required for identity verification'
+    ]
+  },
+  // --- End of New Field ---
   // AI Proctoring preferences
   preferences: {
     notifications: {
@@ -85,12 +94,13 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Configure passport-local-mongoose plugin for AI proctoring authentication
+// Configure passport-local-mongoose plugin
 userSchema.plugin(passportLocalMongoose, {
   usernameField: 'email',
   usernameLowerCase: true,
-  session: false, // We use JWT for AI proctoring system
-  selectFields: 'name email role isActive lastLogin examHistory profilePicture preferences createdAt updatedAt',
+  session: false,
+  // You might want to add 'referenceImage' here if you ever need passport to select it
+  selectFields: 'name email role isActive lastLogin examHistory profilePicture referenceImage preferences createdAt updatedAt', // <-- Added referenceImage
   errorMessages: {
     MissingPasswordError: 'Password is required',
     AttemptTooSoonError: 'Account is currently locked. Try again later.',
@@ -101,7 +111,6 @@ userSchema.plugin(passportLocalMongoose, {
     MissingUsernameError: 'Email is required',
     UserExistsError: 'A user with the given email is already registered'
   },
-  // Security options for AI proctoring system
   limitAttempts: true,
   maxAttempts: 5,
   digestAlgorithm: 'sha256',
@@ -111,7 +120,7 @@ userSchema.plugin(passportLocalMongoose, {
   keylen: 512
 });
 
-// Indexes for better query performance in AI proctoring system
+// Indexes for better query performance
 userSchema.index({ email: 1, role: 1 });
 userSchema.index({ role: 1, isActive: 1 });
 userSchema.index({ lastLogin: -1 });
@@ -126,9 +135,9 @@ userSchema.virtual('publicProfile').get(function() {
     bio: this.bio,
     institution: this.institution,
     department: this.department,
-    profilePicture: this.profilePicture,
+    profilePicture: this.profilePicture, // Keep cosmetic picture
     lastLogin: this.lastLogin,
-    examHistory: this.examHistory
+    // Probably exclude examHistory and referenceImage from public profile
   };
 });
 
@@ -141,6 +150,6 @@ userSchema.methods.canProctor = function() {
   return this.isActive && this.role === 'instructor';
 };
 
-console.log('✅ User model configured for AI Proctoring System');
+console.log('✅ User model configured for AI Proctoring System (with Reference Image)');
 
 module.exports = mongoose.model('User', userSchema);

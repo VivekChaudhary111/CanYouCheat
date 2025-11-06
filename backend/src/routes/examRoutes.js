@@ -17,7 +17,7 @@ router.delete('/:id', auth, examController.deleteExam);
 
 // AI Proctoring System - Instructor Management Routes
 console.log('🎓 Adding AI Proctoring instructor management routes...');
-
+router.post('/:examId/verify-identity', auth, examController.verifyIdentity);
 // Get exam results with AI behavior analysis (instructor)
 router.get('/:examId/results', auth, examController.getExamResults);
 

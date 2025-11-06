@@ -15,7 +15,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student'
+    role: 'student',
   });
 
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ const Register = () => {
     isOpen: false,
     type: '',
     title: '',
-    message: ''
+    message: '',
   });
 
   // ✅ Handle input change
@@ -48,7 +48,7 @@ const Register = () => {
     else setPasswordStrength('strong');
   };
 
-  // ✅ Validate form
+  // ✅ Validate form fields
   const validateForm = () => {
     if (!formData.name.trim()) return 'Full name is required';
     if (!formData.email.trim()) return 'Email is required';
@@ -62,7 +62,7 @@ const Register = () => {
     return null;
   };
 
-  // ✅ Capture image (safe with fallback)
+  // ✅ Capture image safely
   const captureImage = useCallback(() => {
     if (!webcamRef.current) return;
     const imageSrc = webcamRef.current.getScreenshot();
@@ -109,9 +109,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      console.log('📸 Captured Image Type:', typeof capturedImage);
       console.log('🟢 Sending registration request...');
-
       const result = await register(
         formData.name,
         formData.email,
@@ -126,7 +124,7 @@ const Register = () => {
         showModal('error', 'Registration Failed', result?.message || 'Try again later.');
       }
     } catch (err) {
-      console.error('Registration error:', err);
+      console.error('❌ Registration error:', err);
       showModal('error', 'Server Error', err.message || 'Please try again.');
     } finally {
       setLoading(false);
@@ -230,6 +228,12 @@ const Register = () => {
                   className="form-input"
                   required
                 />
+
+                {passwordStrength && (
+                  <div className={`password-strength ${passwordStrength}`}>
+                    Password strength: {passwordStrength}
+                  </div>
+                )}
 
                 {/* Captured face preview */}
                 {formData.role === 'student' && capturedImage && (
