@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: canyoucheat-backend
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: canyoucheat-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AI_SERVICE_URL
+        value: https://your-ai-service.onrender.com
+      - key: FRONTEND_URL
+        value: https://your-frontend.vercel.app
+
+databases:
+  - name: canyoucheat-db
+    databaseName: canyoucheat
+    user: admin

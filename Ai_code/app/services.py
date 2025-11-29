@@ -2,13 +2,13 @@
 import numpy as np
 import cv2
 from .schema import ProctorFlags
-from .models.face import FaceProcessor 
-from .models.object import ObjectDetector
+# from .models.face import FaceProcessor 
+# from .models.object import ObjectDetector
 
 class ProctoringService:
     def __init__(self, object_model_path: str):
-        self.face_processor = FaceProcessor()
-        self.object_detector = ObjectDetector(model_path=object_model_path)
+        # self.face_processor = FaceProcessor()
+        # self.object_detector = ObjectDetector(model_path=object_model_path)
         print("ProctoringService initialized with MediaPipe FaceProcessor.")
 
     def process_frame(self, image: np.ndarray) -> ProctorFlags:

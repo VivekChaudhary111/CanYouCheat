@@ -1,43 +1,155 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import os
+import logging
+import traceback
+from typing import Optional
+
+# Import your existing models
 from app.models.face_verifier import verify_faces
 from app.models.face_counter import count_faces
 from app.models.object_detector import detect_objects
-import base64, uuid, os, cv2, numpy as np
+# from app.services import decode_base64_image
 
-app = FastAPI()
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
+# Initialize FastAPI
+app = FastAPI(
+    title="CanYouCheat AI Service",
+    version="1.0.0",
+    description="AI Proctoring and Analysis Service"
+)
+
+# CORS middleware for production
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://your-frontend.vercel.app",
+        "https://your-backend.onrender.com",
+        "http://localhost:3000",
+        "http://localhost:5000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Pydantic models
 class FacePayload(BaseModel):
     img1_base64: str
     img2_base64: str
 
-def save_base64_image(base64_str: str, filename: str) -> str:
-    os.makedirs("images", exist_ok=True)
-    img_data = base64.b64decode(base64_str.split(",")[-1])
-    path = os.path.join("images", filename)
-    with open(path, "wb") as f:
-        f.write(img_data)
-    return path
+class ProctoringRequest(BaseModel):
+    image: str
+
+class ProctoringResponse(BaseModel):
+    success: bool
+    face_count: dict
+    object_detection: dict
+    audio_analysis: Optional[dict] = None
+    error: Optional[str] = None
+
+@app.get("/")
+async def root():
+    return {
+        "message": "CanYouCheat AI Service",
+        "status": "healthy",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "service": "AI Proctoring Service",
+        "models_loaded": True
+    }
 
 @app.post("/verify_faces/")
-async def verify_faces_base64(payload: FacePayload):
-    img1_path = save_base64_image(payload.img1_base64, f"{uuid.uuid4()}_img1.jpg")
-    img2_path = save_base64_image(payload.img2_base64, f"{uuid.uuid4()}_img2.jpg")
-    result = verify_faces(img1_path, img2_path)
-    os.remove(img1_path)
-    os.remove(img2_path)
-    return result
+async def verify_faces_endpoint(payload: FacePayload):
+    """Face verification endpoint"""
+    try:
+        logger.info("🔍 Face verification request received")
+        
+        result = verify_faces(payload.img1_base64, payload.img2_base64)
+        
+        logger.info("✅ Face verification completed")
+        return result
+        
+    except Exception as e:
+        logger.error(f"❌ Face verification error: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/proctor")
+@app.post("/proctor", response_model=ProctoringResponse)
 async def proctor_route(file: UploadFile = File(...)):
-    image_bytes = await file.read()
-    np_img = np.frombuffer(image_bytes, np.uint8)
-    frame = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+    """Main proctoring endpoint"""
+    try:
+        logger.info("🤖 Proctoring analysis request received")
+        
+        # Read image file
+        image_data = await file.read()
+        
+        # Convert to numpy array for processing
+        import cv2
+        import numpy as np
+        nparr = np.frombuffer(image_data, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        if frame is None:
+            raise HTTPException(status_code=400, detail="Invalid image data")
+        
+        logger.info(f"✅ Image processed: {frame.shape}")
+        
+        # Initialize results
+        results = {
+            "face_count": {"face_count": 0, "bounding_boxes": []},
+            "object_detection": {"detections": []},
+            "audio_analysis": {"noise_level": 0, "speech_detected": False}
+        }
+        
+        # Face detection
+        try:
+            face_result = count_faces(frame)
+            results["face_count"] = face_result
+            logger.info(f"🔍 Face detection: {face_result.get('face_count', 0)} faces")
+        except Exception as e:
+            logger.error(f"❌ Face detection error: {str(e)}")
+            results["face_count"]["error"] = str(e)
+        
+        # Object detection
+        try:
+            object_result = detect_objects(frame)
+            results["object_detection"] = object_result
+            logger.info(f"📱 Object detection: {len(object_result.get('detections', []))} objects")
+        except Exception as e:
+            logger.error(f"❌ Object detection error: {str(e)}")
+            results["object_detection"]["error"] = str(e)
+        
+        response = ProctoringResponse(
+            success=True,
+            face_count=results["face_count"],
+            object_detection=results["object_detection"],
+            audio_analysis=results["audio_analysis"]
+        )
+        
+        logger.info("✅ Proctoring analysis completed successfully")
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Proctoring analysis error: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
-    face_result = count_faces(frame)
-    object_result = detect_objects(frame)
-
-    return {
-        "face_count": face_result,
-        "object_detection": object_result
-    }
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
