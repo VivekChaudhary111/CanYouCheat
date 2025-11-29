@@ -30,8 +30,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://your-frontend.vercel.app",
-        "https://your-backend.onrender.com",
+        "https://can-you-cheat.vercel.app/",
+        "https://canyoucheat.onrender.com",
         "http://localhost:3000",
         "http://localhost:5000"
     ],

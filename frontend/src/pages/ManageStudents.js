@@ -31,7 +31,7 @@ const fetchExamData = useCallback(async () => {
     console.log('🔍 Fetching AI proctoring exam management data for:', examId);
 
     // Fetch exam details with student management info
-    const examResponse = await fetch(`http://localhost:5000/api/exams/${examId}`, {
+    const examResponse = await fetch(`https://can-you-cheat.vercel.app//api/exams/${examId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -46,7 +46,7 @@ const fetchExamData = useCallback(async () => {
     setExam(examData.exam);
     
     // Fetch all available students
-    const studentsResponse = await fetch('http://localhost:5000/api/auth/students', {
+    const studentsResponse = await fetch('https://can-you-cheat.vercel.app//api/auth/students', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -63,7 +63,7 @@ const fetchExamData = useCallback(async () => {
     }
 
     // Fetch current assignments and submissions
-    const assignmentsResponse = await fetch(`http://localhost:5000/api/exams/${examId}/students`, {
+    const assignmentsResponse = await fetch(`https://can-you-cheat.vercel.app//api/exams/${examId}/students`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ const handleBulkAssign = async () => {
 
     console.log('📋 Assigning students to AI-proctored exam:', selectedStudents);
 
-    const response = await fetch(`http://localhost:5000/api/exams/${examId}/students`, {
+    const response = await fetch(`https://can-you-cheat.vercel.app//api/exams/${examId}/students`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -165,7 +165,7 @@ const handleBulkRemove = async () => {
 
     console.log('🗑️ Removing students from AI-proctored exam:', selectedStudents);
 
-    const response = await fetch(`http://localhost:5000/api/exams/${examId}/students`, {
+    const response = await fetch(`https://can-you-cheat.vercel.app//api/exams/${examId}/students`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -461,7 +461,7 @@ const CreateExam = () => {
         }))
       });
       
-      const response = await fetch('http://localhost:5000/api/exams', {
+      const response = await fetch('https://canyoucheat.onrender.com/api/exams', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

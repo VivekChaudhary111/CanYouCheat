@@ -50,7 +50,7 @@ const EditExam = () => {
       setLoading(true);
       setError('');
 
-      const response = await fetch(`http://localhost:5000/api/exams/${examId}`, {
+      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -145,7 +145,7 @@ const EditExam = () => {
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/exams/${examId}`, {
+      const response = await fetch(`hhttps://can-you-cheat.vercel.app/api/exams/${examId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

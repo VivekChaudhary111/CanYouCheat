@@ -36,7 +36,7 @@ const ChangePassword = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+      const response = await fetch('https://canyoucheat.onrender.com/api/auth/change-password', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

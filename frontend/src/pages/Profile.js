@@ -31,7 +31,7 @@ const Profile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const response = await fetch('https://can-you-cheat.vercel.app//api/auth/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
