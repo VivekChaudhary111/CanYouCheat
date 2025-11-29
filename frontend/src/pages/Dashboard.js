@@ -30,8 +30,8 @@ const Dashboard = () => {
     
     // Fetch role-specific dashboard data
     const endpoint = user?.role === 'instructor' 
-      ? 'http://localhost:5000/api/instructor/dashboard'
-      : 'http://localhost:5000/api/student/dashboard';
+      ? 'https://canyoucheat.onrender.com/api/instructor/dashboard'
+      : 'https://canyoucheat.onrender.com/api/student/dashboard';
       
     const response = await fetch(endpoint, {
       headers: {

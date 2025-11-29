@@ -83,7 +83,7 @@ const ProctoringDashboard = () => {
   // Fetch exam data
   const fetchExamData = async () => {
     try {
-      const examResponse = await fetch(`http://localhost:5000/api/exams/${examId}`, {
+      const examResponse = await fetch(`https://can-you-cheat.vercel.app//api/exams/${examId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -107,7 +107,7 @@ const ProctoringDashboard = () => {
 
     console.log('🔌 Initializing instructor socket...');
 
-    const socket = io(process.env.REACT_APP_SERVER_URL || 'http://localhost:5000', {
+    const socket = io(process.env.REACT_APP_SERVER_URL || 'https://can-you-cheat.vercel.app/', {
       transports: ['websocket', 'polling'],
       upgrade: true,
       rememberUpgrade: true
