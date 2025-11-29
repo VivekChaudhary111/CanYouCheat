@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
       name: name.trim(),
       email: email.toLowerCase().trim(),
       role: role,
-      referenceImage: role === 'instructor' ? live_photo_base64 : "",
+      referenceImage: role === 'student' ? live_photo_base64 : "",
     });
 
     // Register with passport-local-mongoose (handles hashing automatically)

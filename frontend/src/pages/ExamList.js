@@ -321,19 +321,25 @@ const ExamList = () => {
                       className="btn btn-primary"
                       onClick={() => handleViewResults(exam._id)}
                     >
-                      📊 View Results
+                    View Results
                     </button>
                     <button 
                       className="btn btn-secondary"
                       onClick={() => handleManageStudents(exam._id)}
                     >
-                      👥 Manage Students
+                    Manage Students
                     </button>
                     <button 
-                      className="btn btn-outline"
+                      className="btn btn-secondary"
                       onClick={() => handleEditExam(exam._id)}
                     >
-                      ✏️ Edit Exam
+                    Edit Exam
+                    </button>
+                    <button 
+                      onClick={() => navigate(`/proctoring/${exam._id}`)}
+                      className="btn btn-primary"
+                    >
+                    Monitor Exam
                     </button>
                   </div>
                 )}

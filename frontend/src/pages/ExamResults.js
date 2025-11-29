@@ -586,7 +586,7 @@ const ExamResults = () => {
                       <div className="action-buttons">
                         <button 
                           className="btn btn-sm btn-outline"
-                          onClick={() => {/* TODO: View detailed analysis */}}
+                          onClick={() => navigate(`/exams/${examId}/student/${submission.student._id}/details`)}
                           title="View Detailed AI Analysis"
                         >
                           🔍 Details
@@ -594,7 +594,7 @@ const ExamResults = () => {
                         {submission.flaggedForReview && (
                           <button 
                             className="btn btn-sm btn-warning"
-                            onClick={() => {/* TODO: Review submission */}}
+                            onClick={() => navigate(`/exams/${examId}/student/${submission.student._id}/details`)}
                             title="Review Flagged Submission"
                           >
                             ⚠️ Review

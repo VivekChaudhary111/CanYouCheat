@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute'; // ✅ new import
 
+import StudentAnalysisDetails from './pages/StudentAnalysisDetails';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -35,10 +36,11 @@ function App() {
               <Route path="/register" element={<Register />} />
 
               {/* Protected routes */}
+              <Route path="/exams/:examId/student/:studentId/details" element={<StudentAnalysisDetails />} />
               <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
               <Route path="/exams" element={<PrivateRoute element={ExamList} />} />
               <Route path="/exams/:examId/take" element={<PrivateRoute element={ExamTaking} />} />
-              <Route path="/proctoring" element={<PrivateRoute element={ProctoringDashboard} />} />
+              <Route path="/proctoring/:examId" element={<PrivateRoute element={ProctoringDashboard} />} />
               <Route path="/create-exam" element={<PrivateRoute element={CreateExam} />} />
               <Route path="/exams/:examId/students" element={<PrivateRoute element={ManageStudents} />} />
               <Route path="/exams/:examId/results" element={<PrivateRoute element={ExamResults} />} />

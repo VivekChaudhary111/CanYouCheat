@@ -157,7 +157,7 @@ const InstructorDashboard = ({ stats, recentActivity, refreshData }) => {
     {
       title: 'Review Sessions',
       description: 'Analyze flagged proctoring sessions',
-      action: () => navigate('/proctoring'),
+      action: () => navigate('/exams'),
       icon: 'review',
       variant: 'warning'
     },
@@ -169,6 +169,11 @@ const InstructorDashboard = ({ stats, recentActivity, refreshData }) => {
       variant: 'info'
     }
   ];
+
+  // ADD this new action for proctoring dashboard
+  const navigateToProctoring = (examId) => {
+    navigate(`/proctoring/${examId}`);
+  };
 
   const statCards = [
     {

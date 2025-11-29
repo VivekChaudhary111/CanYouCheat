@@ -1,0 +1,824 @@
+/* =============================================
+   PROCTORING DASHBOARD - LIGHT THEME (SHADCN STYLE)
+   ============================================= */
+
+/* CSS Variables for consistent theming */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+
+/* =============================================
+   MAIN CONTAINER
+   ============================================= */
+.instructor-proctoring {
+  min-height: 100vh;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.instructor-proctoring.loading,
+.instructor-proctoring.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* =============================================
+   LOADING STATES
+   ============================================= */
+.instructor-proctoring .loading-spinner {
+  text-align: center;
+  padding: 2rem;
+}
+
+.instructor-proctoring .spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid hsl(var(--muted));
+  border-top: 3px solid hsl(var(--primary));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.instructor-proctoring .loading-spinner p {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* =============================================
+   ERROR STATES
+   ============================================= */
+.instructor-proctoring .error-message {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  max-width: 24rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.instructor-proctoring .error-message h3 {
+  color: hsl(var(--destructive));
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.instructor-proctoring .error-message p {
+  color: hsl(var(--muted-foreground));
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+/* =============================================
+   HEADER SECTION
+   ============================================= */
+.instructor-proctoring .proctoring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: hsl(var(--card));
+  border-bottom: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.instructor-proctoring .header-left h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .exam-info h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .exam-code {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted));
+  padding: 0.25rem 0.75rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Live Stats */
+.instructor-proctoring .live-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.instructor-proctoring .stat {
+  text-align: center;
+  min-width: 5rem;
+}
+
+.instructor-proctoring .stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: hsl(var(--primary));
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.instructor-proctoring .stat-label {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* =============================================
+   MAIN CONTENT LAYOUT
+   ============================================= */
+.instructor-proctoring .proctoring-content {
+  display: grid;
+  grid-template-columns: 20rem 1fr 24rem;
+  height: calc(100vh - 7rem);
+  gap: 1px;
+  background: hsl(var(--border));
+}
+
+/* =============================================
+   STUDENTS PANEL (LEFT SIDEBAR)
+   ============================================= */
+.instructor-proctoring .students-panel {
+  background: hsl(var(--card));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.instructor-proctoring .panel-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.5);
+}
+
+.instructor-proctoring .panel-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .students-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+/* Student Item */
+.instructor-proctoring .student-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.instructor-proctoring .student-item:hover {
+  background: hsl(var(--accent));
+  border-color: hsl(var(--ring));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.1);
+}
+
+.instructor-proctoring .student-item.selected {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.2);
+}
+
+/* Risk-based styling */
+.instructor-proctoring .student-item.risk-high {
+  border-left: 4px solid hsl(var(--destructive));
+}
+
+.instructor-proctoring .student-item.risk-medium {
+  border-left: 4px solid hsl(39 100% 57%); /* amber */
+}
+
+.instructor-proctoring .student-item.risk-low {
+  border-left: 4px solid hsl(142 76% 36%); /* green */
+}
+
+.instructor-proctoring .student-avatar {
+  position: relative;
+  margin-right: 0.75rem;
+  font-size: 1.5rem;
+}
+
+.instructor-proctoring .status-indicator {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid hsl(var(--card));
+  top: -2px;
+  right: -2px;
+}
+
+.instructor-proctoring .status-indicator.active {
+  background: hsl(142 76% 36%); /* green */
+}
+
+.instructor-proctoring .status-indicator.disconnected {
+  background: hsl(var(--destructive));
+}
+
+.instructor-proctoring .student-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.instructor-proctoring .student-name {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.25rem;
+  /* truncate: true; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* white-space: nowrap; Prevents text from wrapping to the next line */
+  /* overflow: hidden;    Hides any content that overflows the element's box */
+  /* text-overflow: ellipsis; Displays an ellipsis (...) to represent truncated text */
+  /* width: 200px; Or any other fixed width or max-width */
+}
+
+.instructor-proctoring .student-meta {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0.25rem;
+}
+
+.instructor-proctoring .risk-score {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .student-activity {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.instructor-proctoring .student-actions {
+  margin-left: 0.5rem;
+}
+
+.instructor-proctoring .action-btn {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.instructor-proctoring .action-btn:hover {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* =============================================
+   STUDENT DETAILS PANEL (CENTER)
+   ============================================= */
+.instructor-proctoring .student-details-panel {
+  background: hsl(var(--card));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.instructor-proctoring .no-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 2rem;
+}
+
+.instructor-proctoring .no-selection h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .no-selection p {
+  margin: 0;
+  color: hsl(var(--muted-foreground));
+  max-width: 24rem;
+}
+
+/* Student Detail View */
+.instructor-proctoring .student-detail-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.instructor-proctoring .student-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.5);
+}
+
+.instructor-proctoring .student-header h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .student-status {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.instructor-proctoring .status.active {
+  color: hsl(142 76% 36%);
+  font-weight: 500;
+}
+
+.instructor-proctoring .status.disconnected {
+  color: hsl(var(--destructive));
+  font-weight: 500;
+}
+
+.instructor-proctoring .risk.risk-high {
+  color: hsl(var(--destructive));
+  font-weight: 600;
+}
+
+.instructor-proctoring .risk.risk-medium {
+  color: hsl(39 100% 57%);
+  font-weight: 600;
+}
+
+/* Live Feed */
+.instructor-proctoring .live-feed {
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.instructor-proctoring .live-feed h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .student-webcam {
+  width: 100%;
+  max-width: 32rem;
+  height: auto;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.1);
+}
+
+.instructor-proctoring .no-feed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 12rem;
+  background: hsl(var(--muted));
+  border: 2px dashed hsl(var(--border));
+  border-radius: var(--radius);
+  color: hsl(var(--muted-foreground));
+}
+
+/* Analysis Data */
+.instructor-proctoring .analysis-data {
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.instructor-proctoring .analysis-data h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.instructor-proctoring .metric {
+  background: hsl(var(--muted));
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.instructor-proctoring .metric .label {
+  display: block;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.instructor-proctoring .metric .value {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+/* Message Student */
+.instructor-proctoring .message-student {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.instructor-proctoring .message-student h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .message-input-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.instructor-proctoring .message-input-group input {
+  flex: 1;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.instructor-proctoring .message-input-group input:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+.instructor-proctoring .send-btn {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.instructor-proctoring .send-btn:hover {
+  background: hsl(var(--primary) / 0.9);
+}
+
+.instructor-proctoring .quick-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.instructor-proctoring .quick-messages button {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.instructor-proctoring .quick-messages button:hover {
+  background: hsl(var(--accent));
+  border-color: hsl(var(--ring));
+}
+
+/* =============================================
+   ALERTS PANEL (RIGHT SIDEBAR)
+   ============================================= */
+.instructor-proctoring .alerts-panel {
+  background: hsl(var(--card));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.instructor-proctoring .alert-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.instructor-proctoring .alert-filters select {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  color: hsl(var(--foreground));
+}
+
+.instructor-proctoring .alerts-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+/* Alert Item */
+.instructor-proctoring .alert-item {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.instructor-proctoring .alert-item:hover {
+  box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.1);
+}
+
+/* Alert severity styling */
+.instructor-proctoring .alert-item.severity-critical {
+  border-color: hsl(var(--destructive));
+  background: hsl(var(--destructive) / 0.05);
+}
+
+.instructor-proctoring .alert-item.severity-high {
+  border-color: hsl(var(--destructive) / 0.7);
+  background: hsl(var(--destructive) / 0.03);
+}
+
+.instructor-proctoring .alert-item.severity-info {
+  border-color: hsl(var(--primary) / 0.7);
+  background: hsl(var(--primary) / 0.03);
+}
+
+.instructor-proctoring .alert-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: hsl(var(--muted) / 0.5);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.instructor-proctoring .alert-type-icon {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+.instructor-proctoring .alert-student {
+  flex: 1;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+}
+
+.instructor-proctoring .alert-time {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.instructor-proctoring .alert-content {
+  padding: 0.75rem;
+}
+
+.instructor-proctoring .alert-content {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  line-height: 1.4;
+}
+
+.instructor-proctoring .alert-risk {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+
+.instructor-proctoring .alert-actions {
+  padding: 0.75rem;
+  border-top: 1px solid hsl(var(--border));
+  display: flex;
+  justify-content: flex-end;
+}
+
+.instructor-proctoring .dismiss-btn {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.instructor-proctoring .dismiss-btn:hover {
+  background: hsl(var(--accent));
+}
+
+.instructor-proctoring .no-alerts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+/* =============================================
+   RESPONSIVE DESIGN
+   ============================================= */
+@media (max-width: 1280px) {
+  .instructor-proctoring .proctoring-content {
+    grid-template-columns: 18rem 1fr 20rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .instructor-proctoring .proctoring-content {
+    grid-template-columns: 16rem 1fr 18rem;
+  }
+  
+  .instructor-proctoring .proctoring-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .instructor-proctoring .live-stats {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .instructor-proctoring .proctoring-content {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .instructor-proctoring .students-panel,
+  .instructor-proctoring .alerts-panel {
+    max-height: 20rem;
+  }
+  
+  .instructor-proctoring .proctoring-header {
+    padding: 1rem;
+  }
+  
+  .instructor-proctoring .live-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+  }
+}
+
+/* =============================================
+   SCROLLBAR STYLING
+   ============================================= */
+.instructor-proctoring .students-list::-webkit-scrollbar,
+.instructor-proctoring .alerts-list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.instructor-proctoring .students-list::-webkit-scrollbar-track,
+.instructor-proctoring .alerts-list::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+.instructor-proctoring .students-list::-webkit-scrollbar-thumb,
+.instructor-proctoring .alerts-list::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 0.25rem;
+}
+
+.instructor-proctoring .students-list::-webkit-scrollbar-thumb:hover,
+.instructor-proctoring .alerts-list::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* =============================================
+   BUTTON COMPONENT STYLES
+   ============================================= */
+.instructor-proctoring .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+
+.instructor-proctoring .btn-primary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.instructor-proctoring .btn-primary:hover {
+  background: hsl(var(--primary) / 0.9);
+}
+
+.instructor-proctoring .btn-secondary {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.instructor-proctoring .btn-secondary:hover {
+  background: hsl(var(--accent));
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.instructor-proctoring .alert-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.instructor-proctoring .student-item {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* =============================================
+   FOCUS STATES FOR ACCESSIBILITY
+   ============================================= */
+.instructor-proctoring button:focus-visible,
+.instructor-proctoring select:focus-visible,
+.instructor-proctoring input:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.instructor-proctoring .student-item:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -1px;
+}

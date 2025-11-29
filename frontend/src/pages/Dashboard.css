@@ -1,4 +1,7 @@
 /* Continue from where the previous CSS left off */
+div{
+  border-radius: 6px;
+}
 .risk-display.low-risk {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   color: #065f46;
@@ -923,7 +926,7 @@
   }
 }
 
-/* Dark theme support (optional) */
+/* Dark theme support (optional)
 @media (prefers-color-scheme: dark) {
   .dashboard-container {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -985,7 +988,7 @@
   .activity-time {
     color: #94a3b8;
   }
-}
+} */
 /* Enhanced Responsive Design for Student Stats */
 @media (max-width: 1400px) {
   .stats-grid.student-stats {
@@ -1175,7 +1178,7 @@
   }
 }
 
-/* Enhanced Dark Mode Support for Stats */
+/* Enhanced Dark Mode Support for Stats
 @media (prefers-color-scheme: dark) {
   .stat-card {
     background: #334155;
@@ -1210,4 +1213,4 @@
     background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
     color: #fef3c7;
   }
-}
+} */
