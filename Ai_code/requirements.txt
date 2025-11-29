@@ -1,29 +1,45 @@
+# Core utilities
 requests>=2.27.1
 numpy>=1.14.0
 pandas>=0.23.4
 gdown>=3.10.1
 tqdm>=4.30.0
 Pillow>=5.2.0
-opencv-python>=4.5.5.64
-tensorflow>=1.9.0
-keras>=2.2.0
-Flask>=1.1.2
-flask_cors>=4.0.1
+
+# Computer Vision
+opencv-python-headless==4.8.1.78
+
+# TensorFlow ecosystem (compatible with DeepFace)
+tensorflow>=2.10.0
+keras>=2.10.0
+
+# Face detection tools
 mtcnn>=0.1.0
 retina-face>=0.0.14
-fire>=0.4.0
-gunicorn>=20.1.0
-uvicorn>=0.38.0
-fastapi>=0.122.0
 deepface>=0.0.96
-tf-keras>=2.20.1
-ultralytics>=8.3.232
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
-opencv-python-headless==4.8.1.78
+
+# Optional facial recognition (requires dlib)
 face-recognition==1.3.0
-pydantic==2.5.0
+
+# Backend frameworks
+Flask>=1.1.2
+flask_cors>=4.0.1
+fastapi>=0.122.0
+starlette>=0.36.3   # compatible with new FastAPI
+aiofiles==23.2.1
+python-multipart==0.0.6
+
+# Auth + security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-aiofiles==23.2.1
-starlette==0.27.0
+pydantic==2.5.0
+
+# CLI / utilities
+fire>=0.4.0
+
+# Model serving / hosting
+gunicorn>=20.1.0
+uvicorn[standard]>=0.24.0
+
+# YOLO models
+ultralytics>=8.3.232
