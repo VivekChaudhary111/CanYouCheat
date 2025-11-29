@@ -194,7 +194,7 @@ const analyzeFrameWithAI = useCallback(async (frameData) => {
       tokenPrefix: token?.substring(0, 20) + '...'
     });
     
-    const response = await fetch(`https://can-you-cheat.vercel.app//api/proctoring/analyze-frame`, {
+    const response = await fetch(`https://can-you-cheat.vercel.app/api/proctoring/analyze-frame`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,  // Make sure Bearer prefix is there

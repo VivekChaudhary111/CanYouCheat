@@ -28,8 +28,8 @@ const ExamResults = () => {
       
       // Different endpoints for instructor vs student
       const endpoint = isStudent 
-        ? `https://can-you-cheat.vercel.app//api/exams/${examId}/my-result`
-        : `https://can-you-cheat.vercel.app//api/exams/${examId}/results`;
+        ? `https://canyoucheat.onrender.com/api/exams/${examId}/my-result`
+        : `https://canyoucheat.onrender.com/api/exams/${examId}/results`;
 
       const response = await fetch(endpoint, {
         headers: {
