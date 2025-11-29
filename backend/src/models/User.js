@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
+let passportLocalMongoose = require('passport-local-mongoose');
+// Fix for Node import behavior: if it's wrapped in default, unwrap it
+if (passportLocalMongoose.default) {
+    passportLocalMongoose = passportLocalMongoose.default;
+}
 
 console.log('🔧 Defining User model for AI Proctoring System...');
 
