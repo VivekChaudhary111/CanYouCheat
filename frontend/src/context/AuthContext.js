@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
           const userData = JSON.parse(storedUser);
           
           // Verify token is still valid by checking with backend
-          const response = await fetch('http://localhost:5000/api/auth/verify', {
+          const response = await fetch('https://canyoucheat.onrender.com/api/auth/verify', {
             headers: {
               'Authorization': `Bearer ${storedToken}`
             }
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
       };
 
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('https://canyoucheat.onrender.com/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('https://canyoucheat.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, role }),
