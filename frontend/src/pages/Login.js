@@ -170,7 +170,7 @@ const Login = () => {
           <div className="brand-content">
             <div className="brand-logo">
               <div className="logo-icon">
-                <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+                <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
               </div>
               <h1 className="brand-title">CanYouCheat</h1>
             </div>
