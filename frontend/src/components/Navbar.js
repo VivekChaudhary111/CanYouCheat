@@ -60,7 +60,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
             <div className="logo-icon">
-                <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+                <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
               </div>
             <div className="logo-text">
               <span className="logo-title">CanYouCheat</span>
@@ -83,7 +83,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <Link to="/dashboard" className="navbar-logo">
             <div className="logo-icon">
-                <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+                <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
             </div>
             <div className="logo-text">
               <span className="logo-title">CanYouCheat</span>
@@ -169,7 +169,7 @@ const Navbar = () => {
         {/* Logo - Left Side */}
         <Link to="/dashboard" className="navbar-logo">
           <div className="logo-icon">
-            <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+            <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
           </div>
           <div className="logo-text">
             <span className="logo-title">CanYouCheat</span>
