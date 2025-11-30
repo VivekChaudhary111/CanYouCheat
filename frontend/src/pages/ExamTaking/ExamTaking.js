@@ -16,7 +16,7 @@ import ReactWebcam from "react-webcam";
 import './ExamTaking.css';
 import config from '../../config';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://canyoucheat.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
 const FRAME_CAPTURE_RATE = parseInt(process.env.REACT_APP_FRAME_CAPTURE_RATE) || 2;
 const RISK_THRESHOLD = parseInt(process.env.REACT_APP_RISK_THRESHOLD) || 70;
@@ -194,7 +194,7 @@ const analyzeFrameWithAI = useCallback(async (frameData) => {
       tokenPrefix: token?.substring(0, 20) + '...'
     });
     
-    const response = await fetch(`https://canyoucheat.onrender.com/api/proctoring/analyze-frame`, {
+    const response = await fetch(`${API_BASE_URL}/api/proctoring/analyze-frame`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,  // Make sure Bearer prefix is there
@@ -473,7 +473,7 @@ useEffect(() => {
   const initializeProctoring = async () => {
     try {
       // Create socket connection
-      const socket = io(process.env.REACT_APP_SERVER_URL || 'https://canyoucheat.onrender.com/', {
+      const socket = io(process.env.REACT_APP_SERVER_URL || API_BASE_URL, {
         transports: ['websocket', 'polling'],
         upgrade: true,
         rememberUpgrade: true
@@ -729,7 +729,7 @@ useEffect(() => {
 
   const createExamSession = async (live_image_base64) => {
     try {
-      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/start-session`, {
+      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/start-session`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

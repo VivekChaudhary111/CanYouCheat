@@ -20,9 +20,9 @@ const img2Base64 = encodeImageToBase64(img2Path);
 // Send request to AI server
 async function verifyFaces(img1_base64, img2_base64) {
   try {
-    const response = await axios.post('http://localhost:8000/verify_faces/', {
-      img1_base64,
-      img2_base64
+    const response = await axios.post('https://vivekchaudhary111-canyoucheat-ai.hf.space/verify_faces/', {
+      img1_base64:img1_base64,
+      img2_base64:img2_base64
     });
 
     console.log('Verification Result:');

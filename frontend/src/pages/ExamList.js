@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ExamList.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ExamList = () => {
   const [exams, setExams] = useState([]);
@@ -19,7 +21,7 @@ const ExamList = () => {
       
       console.log('🔍 Fetching AI-monitored exams...');
       
-      const response = await fetch('https://canyoucheat.onrender.com/api/exams', {
+      const response = await fetch(`${API_BASE_URL}/api/exams`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -80,7 +82,7 @@ const ExamList = () => {
     try {
       setMessage('Creating demo AI-monitored exam...');
       
-      const response = await fetch('https://canyoucheat.onrender.com/api/exams/create-demo', {
+      const response = await fetch(`${API_BASE_URL}/api/exams/create-demo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

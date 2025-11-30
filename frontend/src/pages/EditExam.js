@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './EditExam.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const EditExam = () => {
   const { examId } = useParams();
@@ -50,7 +52,7 @@ const EditExam = () => {
       setLoading(true);
       setError('');
 
-      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -145,7 +147,7 @@ const EditExam = () => {
     setError('');
 
     try {
-      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Profile = () => {
   const { user, token } = useAuth();
   const [profileData, setProfileData] = useState(null);
@@ -31,7 +34,7 @@ const Profile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch('https://canyoucheat.onrender.com/api/auth/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

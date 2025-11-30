@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { useAuth } from '../../../context/AuthContext'; // Adjust path if needed
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Simple loading spinner component (or use a library)
 const Spinner = () => <div className="loading-spinner"></div>; 
@@ -27,7 +29,7 @@ const ExamVerification = ({ examId, onVerificationSuccess, onVerificationFail, o
 
     try {
       // Send to backend endpoint (you defined this earlier)
-      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/verify-identity`, {
+      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/verify-identity`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

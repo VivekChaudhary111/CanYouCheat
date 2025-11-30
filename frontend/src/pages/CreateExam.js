@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './CreateExam.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const CreateExam = () => {
   const { token, isInstructor } = useAuth();
@@ -461,7 +463,7 @@ const CreateExam = () => {
         }))
       });
       
-      const response = await fetch('https://canyoucheat.onrender.com/api/exams', {
+      const response = await fetch(`${API_BASE_URL}/api/exams`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

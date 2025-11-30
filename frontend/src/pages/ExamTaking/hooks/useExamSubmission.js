@@ -1,4 +1,6 @@
 import { useState } from 'react';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const useExamSubmission = () => {
   const [submissionLoading, setSubmissionLoading] = useState(false);
@@ -16,7 +18,7 @@ export const useExamSubmission = () => {
         submissionType: submissionData.submissionType
       });
 
-      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${submissionData.examId}/submit`, {
+      const response = await fetch(`${API_BASE_URL}/api/exams/${submissionData.examId}/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -70,7 +72,7 @@ export const useExamSubmission = () => {
         answerCount: Object.keys(answers || {}).length
       });
 
-      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/autosave`, {
+      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/autosave`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

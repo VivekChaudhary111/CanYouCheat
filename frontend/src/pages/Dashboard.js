@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -30,8 +32,8 @@ const Dashboard = () => {
     
     // Fetch role-specific dashboard data
     const endpoint = user?.role === 'instructor' 
-      ? 'https://canyoucheat.onrender.com/api/instructor/dashboard'
-      : 'https://canyoucheat.onrender.com/api/student/dashboard';
+      ? `${API_BASE_URL}/api/instructor/dashboard`
+      : `${API_BASE_URL}/api/student/dashboard`;
       
     const response = await fetch(endpoint, {
       headers: {
