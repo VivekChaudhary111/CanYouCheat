@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ManageStudents.css';
 
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const ManageStudents = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
@@ -31,7 +34,7 @@ const fetchExamData = useCallback(async () => {
     console.log('🔍 Fetching AI proctoring exam management data for:', examId);
 
     // Fetch exam details with student management info
-    const examResponse = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
+    const examResponse = await fetch(`${API_BASE_URL}/api/exams/${examId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -46,7 +49,7 @@ const fetchExamData = useCallback(async () => {
     setExam(examData.exam);
     
     // Fetch all available students
-    const studentsResponse = await fetch('https://canyoucheat.onrender.com/api/auth/students', {
+    const studentsResponse = await fetch(`${API_BASE_URL}/api/auth/students`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -63,7 +66,7 @@ const fetchExamData = useCallback(async () => {
     }
 
     // Fetch current assignments and submissions
-    const assignmentsResponse = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/students`, {
+    const assignmentsResponse = await fetch(`${API_BASE_URL}/api/exams/${examId}/students`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -118,7 +121,7 @@ const handleBulkAssign = async () => {
 
     console.log('📋 Assigning students to AI-proctored exam:', selectedStudents);
 
-    const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/students`, {
+    const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/students`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -165,7 +168,7 @@ const handleBulkRemove = async () => {
 
     console.log('🗑️ Removing students from AI-proctored exam:', selectedStudents);
 
-    const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/students`, {
+    const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/students`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

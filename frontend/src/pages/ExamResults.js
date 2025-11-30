@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ExamResults.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ExamResults = () => {
   const { examId } = useParams();
@@ -28,8 +30,8 @@ const ExamResults = () => {
       
       // Different endpoints for instructor vs student
       const endpoint = isStudent 
-        ? `https://canyoucheat.onrender.com/api/exams/${examId}/my-result`
-        : `https://canyoucheat.onrender.com/api/exams/${examId}/results`;
+        ? `${API_BASE_URL}/api/exams/${examId}/my-result`
+        : `${API_BASE_URL}/api/exams/${examId}/results`;
 
       const response = await fetch(endpoint, {
         headers: {

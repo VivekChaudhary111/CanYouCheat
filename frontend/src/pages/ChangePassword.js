@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './ChangePassword.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ChangePassword = () => {
   const { user, token } = useAuth();
@@ -36,7 +38,7 @@ const ChangePassword = () => {
     }
 
     try {
-      const response = await fetch('https://canyoucheat.onrender.com/api/auth/change-password', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

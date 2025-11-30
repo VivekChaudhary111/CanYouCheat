@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import io from 'socket.io-client';
 import './ProctoringDashboard.css';
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ProctoringDashboard = () => {
   const { examId } = useParams();
@@ -83,7 +85,7 @@ const ProctoringDashboard = () => {
   // Fetch exam data
   const fetchExamData = async () => {
     try {
-      const examResponse = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
+      const examResponse = await fetch(`${API_BASE_URL}/api/exams/${examId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -107,7 +109,7 @@ const ProctoringDashboard = () => {
 
     console.log('🔌 Initializing instructor socket...');
 
-    const socket = io(process.env.REACT_APP_SERVER_URL || 'https://canyoucheat.onrender.com', {
+    const socket = io(process.env.REACT_APP_SERVER_URL || 'http://localhost:5000', {
       transports: ['websocket', 'polling'],
       upgrade: true,
       rememberUpgrade: true

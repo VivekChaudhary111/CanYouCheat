@@ -22,7 +22,7 @@
   ],
   "env": {
     "REACT_APP_API_URL": "https://canyoucheat.onrender.com",
-    "REACT_APP_AI_SERVICE_URL": "https://canyoucheat-ai.onrender.com",
+    "REACT_APP_AI_SERVICE_URL": "https://vivekchaudhary111-canyoucheat-ai.hf.space",
     "REACT_APP_SERVER_URL": "https://canyoucheat.onrender.com",
     "REACT_APP_FRAME_CAPTURE_RATE": "2"
   }

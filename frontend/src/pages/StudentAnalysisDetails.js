@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ExamResults.css'; // Reuse existing styles
+const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const StudentAnalysisDetails = () => {
   const { examId, studentId } = useParams();
@@ -23,7 +25,7 @@ const StudentAnalysisDetails = () => {
         setLoading(true);
         
         const response = await fetch(
-          `https://canyoucheat.onrender.com/api/exams/${examId}/student/${studentId}/details`,
+          `${API_BASE_URL}/api/exams/${examId}/student/${studentId}/details`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
