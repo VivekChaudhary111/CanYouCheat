@@ -1,12 +1,12 @@
-from ultralytics import YOLO
-import cv2
 import numpy as np
-model = YOLO("yolov8n.pt")
 
 def detect_objects(image: np.ndarray) -> dict:
+    import cv2
     # Convert BGR to RGB
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    from ultralytics import YOLO
+    model = YOLO("yolov8n.pt")  
     # Run inference
     results = model(rgb_image)
 

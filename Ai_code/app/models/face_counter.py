@@ -1,14 +1,14 @@
-from mtcnn import MTCNN
-import cv2
 import numpy as np
 
-detector = MTCNN()
 
 def count_faces(image: np.ndarray) -> dict:
+    import cv2
     # Convert to RGB if needed
     if image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    from mtcnn import MTCNN
+    detector = MTCNN()
     detections = detector.detect_faces(image)
     face_count = len(detections)
 
