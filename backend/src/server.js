@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const passport = require('passport');
 require('dotenv').config();
 
 const app = express();
@@ -26,6 +27,11 @@ app.use(cors(corsOptions));
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Initialize Passport for authentication
+require('./config/passport');
+app.use(passport.initialize());
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -55,6 +61,7 @@ const io = socketIo(server, {
 
 // Setup proctoring socket
 const setupProctoringSocket = require('./socket/proctoringSocket');
+// const passport = require('passport');
 setupProctoringSocket(io);
 
 // Error handling middleware
