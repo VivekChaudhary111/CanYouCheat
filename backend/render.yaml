@@ -10,14 +10,14 @@ services:
         value: production
       - key: PORT
         value: 10000
-      - key: MONGODB_URI
+      - key: MONGO_URI
         fromDatabase:
           name: canyoucheat-db
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: AI_SERVICE_URL
-        value: https://your-ai-service.onrender.com
+        value: https://canyoucheat-ai.onrender.com
       - key: FRONTEND_URL
         value: https://your-frontend.vercel.app
 

@@ -19,7 +19,7 @@ const ExamList = () => {
       
       console.log('🔍 Fetching AI-monitored exams...');
       
-      const response = await fetch('https://can-you-cheat.vercel.app/api/exams', {
+      const response = await fetch('https://canyoucheat.onrender.com/api/exams', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ const ExamList = () => {
     try {
       setMessage('Creating demo AI-monitored exam...');
       
-      const response = await fetch('https://can-you-cheat.vercel.app/api/exams/create-demo', {
+      const response = await fetch('https://canyoucheat.onrender.com/api/exams/create-demo', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

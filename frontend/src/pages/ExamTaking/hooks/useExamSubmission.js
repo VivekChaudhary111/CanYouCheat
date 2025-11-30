@@ -16,7 +16,7 @@ export const useExamSubmission = () => {
         submissionType: submissionData.submissionType
       });
 
-      const response = await fetch(`https://can-you-cheat.vercel.app/api/exams/${submissionData.examId}/submit`, {
+      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${submissionData.examId}/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -70,7 +70,7 @@ export const useExamSubmission = () => {
         answerCount: Object.keys(answers || {}).length
       });
 
-      const response = await fetch(`https://can-you-cheat.vercel.app/api/exams/${examId}/autosave`, {
+      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/autosave`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

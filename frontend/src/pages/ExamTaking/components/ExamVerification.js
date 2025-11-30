@@ -27,7 +27,7 @@ const ExamVerification = ({ examId, onVerificationSuccess, onVerificationFail, o
 
     try {
       // Send to backend endpoint (you defined this earlier)
-      const response = await fetch(`https://can-you-cheat.vercel.app/api/exams/${examId}/verify-identity`, {
+      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}/verify-identity`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

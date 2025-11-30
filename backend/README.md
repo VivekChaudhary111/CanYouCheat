@@ -152,7 +152,7 @@ PORT=5000
 NODE_ENV=development
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/canyoucheat
+MONGO_URI=mongodb://localhost:27017/canyoucheat
 DB_NAME=canyoucheat
 
 # Authentication
@@ -699,7 +699,7 @@ describe('Authentication', () => {
 ```bash
 # Set production environment variables
 export NODE_ENV=production
-export MONGODB_URI=mongodb://production-server:27017/canyoucheat
+export MONGO_URI=mongodb://production-server:27017/canyoucheat
 export JWT_SECRET=production-jwt-secret
 ```
 
