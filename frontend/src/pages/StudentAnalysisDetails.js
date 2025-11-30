@@ -23,7 +23,7 @@ const StudentAnalysisDetails = () => {
         setLoading(true);
         
         const response = await fetch(
-          `https://can-you-cheat.vercel.app/api/exams/${examId}/student/${studentId}/details`,
+          `https://canyoucheat.onrender.com/api/exams/${examId}/student/${studentId}/details`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,

@@ -83,7 +83,7 @@ const ProctoringDashboard = () => {
   // Fetch exam data
   const fetchExamData = async () => {
     try {
-      const examResponse = await fetch(`https://can-you-cheat.vercel.app//api/exams/${examId}`, {
+      const examResponse = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -107,7 +107,7 @@ const ProctoringDashboard = () => {
 
     console.log('🔌 Initializing instructor socket...');
 
-    const socket = io(process.env.REACT_APP_SERVER_URL || 'https://can-you-cheat.vercel.app/', {
+    const socket = io(process.env.REACT_APP_SERVER_URL || 'https://canyoucheat.onrender.com', {
       transports: ['websocket', 'polling'],
       upgrade: true,
       rememberUpgrade: true

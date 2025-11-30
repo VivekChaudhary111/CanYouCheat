@@ -145,7 +145,7 @@ const EditExam = () => {
     setError('');
 
     try {
-      const response = await fetch(`hhttps://can-you-cheat.vercel.app/api/exams/${examId}`, {
+      const response = await fetch(`https://canyoucheat.onrender.com/api/exams/${examId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

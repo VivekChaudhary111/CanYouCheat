@@ -10,8 +10,8 @@ function encodeImageToBase64(filePath) {
 }
 
 // Paths to your test images
-const img1Path = 'C:/Users/Gaurav Kumar/Pictures/Camera Roll/WIN_20251004_16_06_53_Pro.jpg';
-const img2Path = 'c:/Users/Gaurav Kumar/Pictures/MyPhotos/WhatsApp Image 2025-10-23 at 09.46.32_c2a39054.jpg';
+const img1Path = 'D:/pictures/20210723_172114~2.jpg';
+const img2Path = 'D:/pictures/PhotoStudio_1673431524686.jpeg';
 
 // Encode both images
 const img1Base64 = encodeImageToBase64(img1Path);
