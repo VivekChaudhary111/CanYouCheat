@@ -32,8 +32,8 @@ const Dashboard = () => {
     
     // Fetch role-specific dashboard data
     const endpoint = user?.role === 'instructor' 
-      ? `${API_BASE_URL}/api/instructor/dashboard`
-      : `${API_BASE_URL}/api/student/dashboard`;
+      ? `${API_BASE_URL}/api/dashboard/instructor/dashboard`
+      : `${API_BASE_URL}/api/dashboard/student/dashboard`;
       
     const response = await fetch(endpoint, {
       headers: {

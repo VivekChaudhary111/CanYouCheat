@@ -3,10 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import './LandingPage.css';
 
 const getImageUrl = (filename) => {
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? process.env.PUBLIC_URL || '' 
-    : '';
-  return `${baseUrl}/${filename}`;
+  return `/${filename}`;
 };
 
 const LandingPage = () => {

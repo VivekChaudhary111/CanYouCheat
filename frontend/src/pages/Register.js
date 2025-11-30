@@ -6,10 +6,7 @@ import Webcam from 'react-webcam';
 import './Auth.css';
 
 const getImageUrl = (filename) => {
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? process.env.PUBLIC_URL || '' 
-    : '';
-  return `${baseUrl}/${filename}`;
+  return `/${filename}`;
 };
 
 const Register = () => {
