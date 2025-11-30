@@ -38,6 +38,8 @@
       "last 1 safari version"
     ]
   },
+  "author": "Vivek Chaudhary",
+  "licence": "MIT",
   "engines": {
     "node": ">=14.0.0"
   }

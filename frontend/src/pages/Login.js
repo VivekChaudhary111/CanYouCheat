@@ -4,6 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import StatusModal from '../components/StatusModal';
 import './Auth.css';
 
+const getImageUrl = (filename) => {
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? process.env.PUBLIC_URL || '' 
+    : '';
+  return `${baseUrl}/${filename}`;
+};
+
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -163,7 +170,7 @@ const Login = () => {
           <div className="brand-content">
             <div className="brand-logo">
               <div className="logo-icon">
-                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+                <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
               </div>
               <h1 className="brand-title">CanYouCheat</h1>
             </div>
