@@ -4,10 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const getImageUrl = (filename) => {
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? process.env.PUBLIC_URL || '' 
-    : '';
-  return `${baseUrl}/${filename}`;
+  return `/${filename}`;
 };
 
 const Navbar = () => {
