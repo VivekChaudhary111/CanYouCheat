@@ -17,9 +17,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: AI_SERVICE_URL
-        value: https://canyoucheat-ai.onrender.com
+        value: https://vivekchaudhary111-canyoucheat-ai.hf.space
       - key: FRONTEND_URL
-        value: https://your-frontend.vercel.app
+        value: https://can-you-cheat.vercel.app/
 
 databases:
   - name: canyoucheat-db

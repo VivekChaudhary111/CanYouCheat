@@ -2,6 +2,13 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './LandingPage.css';
 
+const getImageUrl = (filename) => {
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? process.env.PUBLIC_URL || '' 
+    : '';
+  return `${baseUrl}/${filename}`;
+};
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
@@ -54,7 +61,7 @@ const LandingPage = () => {
 
           <div className="features">
             <div className="feature-card">
-              <img src="/secure_icon_miniproject.png" alt="Secure" />
+              <img src={getImageUrl=("secure_icon_miniproject.png")} alt="Secure" />
               <h3>Secure Exam Environment</h3>
               <p>
                 Advanced AI algorithms monitor in real-time to prevent cheating
@@ -63,7 +70,7 @@ const LandingPage = () => {
             </div>
 
             <div className="feature-card">
-              <img src="/live_monitoring_miniproject.png" alt="Monitoring" />
+              <img src={getImageUrl=("live_monitoring_miniproject.png")} alt="Monitoring" />
               <h3>Live Monitoring</h3>
               <p>
                 Supervisors can view live streams, get alerts, and maintain exam
@@ -72,7 +79,7 @@ const LandingPage = () => {
             </div>
 
             <div className="feature-card">
-              <img src="/analytics_miniproject.png" alt="Analytics" />
+              <img src={getImageUrl=("analytics_miniproject.png")} alt="Analytics" />
               <h3>Smart Analytics</h3>
               <p>
                 Comprehensive post-exam reports with behavioral insights and

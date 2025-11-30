@@ -3,6 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
+const getImageUrl = (filename) => {
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? process.env.PUBLIC_URL || '' 
+    : '';
+  return `${baseUrl}/${filename}`;
+};
+
 const Navbar = () => {
   const { user, logout, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
@@ -53,7 +60,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
             <div className="logo-icon">
-                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+                <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
               </div>
             <div className="logo-text">
               <span className="logo-title">CanYouCheat</span>
@@ -76,7 +83,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <Link to="/dashboard" className="navbar-logo">
             <div className="logo-icon">
-                <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+                <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
             </div>
             <div className="logo-text">
               <span className="logo-title">CanYouCheat</span>
@@ -162,7 +169,7 @@ const Navbar = () => {
         {/* Logo - Left Side */}
         <Link to="/dashboard" className="navbar-logo">
           <div className="logo-icon">
-            <img src="../android-chrome-512x512.png" alt="CanYouCheat Logo" />
+            <img src={getImageUrl=("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
           </div>
           <div className="logo-text">
             <span className="logo-title">CanYouCheat</span>
