@@ -446,10 +446,10 @@ const captureProctoringFrame = useCallback(async () => {
     // Start immediate capture
     setTimeout(captureProctoringFrame, 100);
     
-    // Set up 2fps interval (500ms)
-    frameIntervalRef.current = setInterval(captureProctoringFrame, 500);
+    // Set up 0.5fps interval (2000ms)
+    frameIntervalRef.current = setInterval(captureProctoringFrame, 2000);
     
-    console.log('Frame capture started at 2fps');
+    console.log('Frame capture started at 0.5fps');
   }, [captureProctoringFrame]);
 
   const stopFrameCapture = useCallback(() => {
