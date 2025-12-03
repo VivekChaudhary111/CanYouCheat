@@ -17,7 +17,7 @@
 - [Project Structure](#project-structure)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-- [License](#license)
+<!-- - [License](#license)-->
 
 ## Overview
 
@@ -304,3 +304,4 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 
 *Last updated: December 2025*
+
