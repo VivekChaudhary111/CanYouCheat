@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './LandingPage.css';
 
-const getImageUrl = (filename) => {
-  return `/images/${filename}`;
-};
+import img1 from '.././assets/images/secure_icon_miniproject.png';
+import img2 from '.././assets/images/live_monitoring_miniproject.png';
+import img3 from '.././assets/images/analytics_miniproject.png';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const LandingPage = () => {
 
           <div className="features">
             <div className="feature-card">
-              <img src={getImageUrl("secure_icon_miniproject.png")} alt="Secure" />
+              <img src={img1} alt="Secure" />
               <h3>Secure Exam Environment</h3>
               <p>
                 Advanced AI algorithms monitor in real-time to prevent cheating
@@ -67,7 +67,7 @@ const LandingPage = () => {
             </div>
 
             <div className="feature-card">
-              <img src={getImageUrl("live_monitoring_miniproject.png")} alt="Monitoring" />
+              <img src={img2} alt="Monitoring" />
               <h3>Live Monitoring</h3>
               <p>
                 Supervisors can view live streams, get alerts, and maintain exam
@@ -76,7 +76,7 @@ const LandingPage = () => {
             </div>
 
             <div className="feature-card">
-              <img src={getImageUrl("analytics_miniproject.png")} alt="Analytics" />
+              <img src={img3} alt="Analytics" />
               <h3>Smart Analytics</h3>
               <p>
                 Comprehensive post-exam reports with behavioral insights and

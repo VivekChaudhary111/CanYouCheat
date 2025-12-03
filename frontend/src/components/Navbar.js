@@ -2,10 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
+import img1 from '.././assets/images/android-chrome-512x512.png';
 
-const getImageUrl = (filename) => {
-  return `/images/${filename}`;
-};
 
 const Navbar = () => {
   const { user, logout, isAuthenticated, loading } = useAuth();
@@ -57,7 +55,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
             <div className="logo-icon">
-                <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+                <img src={img1} alt="CanYouCheat Logo" />
               </div>
             <div className="logo-text">
               <span className="logo-title">CanYouCheat</span>
@@ -80,7 +78,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <Link to="/dashboard" className="navbar-logo">
             <div className="logo-icon">
-                <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+                <img src={img1} alt="CanYouCheat Logo" />
             </div>
             <div className="logo-text">
               <span className="logo-title">CanYouCheat</span>
@@ -166,7 +164,7 @@ const Navbar = () => {
         {/* Logo - Left Side */}
         <Link to="/dashboard" className="navbar-logo">
           <div className="logo-icon">
-            <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+            <img src={img1} alt="CanYouCheat Logo" />
           </div>
           <div className="logo-text">
             <span className="logo-title">CanYouCheat</span>
