@@ -5,7 +5,7 @@ import StatusModal from '../components/StatusModal';
 import './Auth.css';
 
 const getImageUrl = (filename) => {
-  return `/${filename}`;
+  return `/images/${filename}`;
 };
 
 const Login = () => {

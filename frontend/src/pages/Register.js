@@ -6,7 +6,7 @@ import Webcam from 'react-webcam';
 import './Auth.css';
 
 const getImageUrl = (filename) => {
-  return `/${filename}`;
+  return `/images/${filename}`;
 };
 
 const Register = () => {

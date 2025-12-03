@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const getImageUrl = (filename) => {
-  return `/${filename}`;
+  return `/images/${filename}`;
 };
 
 const Navbar = () => {
