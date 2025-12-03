@@ -2075,55 +2075,6 @@
   line-height: 1.4;
 }
 
-/* =============================================
-   DARK MODE SUPPORT
-   ============================================= */
-
-@media (prefers-color-scheme: dark) {
-  .exam-taking-container {
-    background: #0f172a;
-    color: #f1f5f9;
-  }
-  
-  .question-container,
-  .exam-header,
-  .exam-footer,
-  .navigation-panel,
-  .exam-info-card,
-  .system-check-card,
-  .question-display {
-    background: #1e293b;
-    color: #f1f5f9;
-    border-color: #334155;
-  }
-  
-  .option {
-    background: #334155;
-    border-color: #475569;
-    color: #f1f5f9;
-  }
-  
-  .option:hover {
-    background: #475569;
-    border-color: #06b6d4;
-  }
-  
-  .option.selected {
-    background: #134e4a;
-    border-color: #10b981;
-  }
-  
-  .text-answer-input {
-    background: #334155;
-    border-color: #475569;
-    color: #f1f5f9;
-  }
-  
-  .text-answer-input:focus {
-    background: #475569;
-    border-color: #06b6d4;
-  }
-}
 
 /* Replace the existing question display styles with these improved ones */
 

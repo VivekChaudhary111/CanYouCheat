@@ -2422,33 +2422,6 @@
   }
 }
 
-/* Dark Mode Support (Future Enhancement) */
-@media (prefers-color-scheme: dark) {
-  .manage-students-container {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    color: white;
-  }
-  
-  .students-header,
-  .students-section,
-  .student-card {
-    background: #374151;
-    border-color: #4b5563;
-  }
-  
-  .exam-info h1,
-  .exam-info h2,
-  .student-name,
-  .section-title h2 {
-    color: white;
-  }
-  
-  .exam-description,
-  .section-title p,
-  .student-email {
-    color: #d1d5db;
-  }
-}
 
 /* Custom Scrollbar */
 .students-table-container::-webkit-scrollbar {
