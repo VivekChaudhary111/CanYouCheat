@@ -106,10 +106,8 @@
 
 .modal-close {
   background: none;
-  border: none;
   padding: 0.5rem;
   cursor: pointer;
-  color: #6b7280;
   border-radius: 8px;
   display: flex;
   align-items: center;

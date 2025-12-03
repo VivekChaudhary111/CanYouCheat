@@ -25,7 +25,7 @@ const SubmissionConfirm = ({ exam, answers, onConfirm, onCancel, loading }) => {
   return (
     <div className="submission-confirm-overlay">
       <div className="submission-confirm-modal">
-        <div className="modal-header">
+        <div className="modal-header-submission">
           <h2>Confirm Exam Submission</h2>
         </div>
 

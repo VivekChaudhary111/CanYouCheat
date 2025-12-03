@@ -820,7 +820,7 @@
   overflow-y: auto;
 }
 
-.modal-header {
+.modal-header-submission {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: #ffffff;
   padding: 2rem;
@@ -828,7 +828,7 @@
   text-align: center;
 }
 
-.modal-header h2 {
+.modal-header-submission h2 {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
