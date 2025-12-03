@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import './LandingPage.css';
 
 const getImageUrl = (filename) => {
-  return `/${filename}`;
+  return `/images/${filename}`;
 };
 
 const LandingPage = () => {
