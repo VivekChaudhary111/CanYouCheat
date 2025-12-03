@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
-import PrivateRoute from './components/PrivateRoute'; // ✅ new import
+import PrivateRoute from './components/PrivateRoute';
+import FaviconManager from './components/FaviconManager'; 
 
 import StudentAnalysisDetails from './pages/StudentAnalysisDetails';
 import LandingPage from './pages/LandingPage';
@@ -26,6 +27,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <FaviconManager />
         <div className="App">
           <Navbar />
           <main className="main-content">
