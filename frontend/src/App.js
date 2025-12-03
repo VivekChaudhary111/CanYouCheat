@@ -50,7 +50,7 @@ function App() {
               <Route path="/change-password" element={<PrivateRoute element={ChangePassword} />} />
 
               {/* Catch-all route */}
-              <Route path="*" element={<Navigate to="/" />} />
+              {/* <Route path="*" element={<Navigate to="/" />} /> */}
             </Routes>
           </main>
         </div>
