@@ -210,33 +210,6 @@
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .modal-content {
-    background: #1f2937;
-  }
-  
-  .modal-title {
-    color: #f9fafb;
-  }
-  
-  .modal-message {
-    color: #d1d5db;
-  }
-  
-  .modal-close {
-    color: #9ca3af;
-  }
-  
-  .modal-close:hover {
-    background: #374151;
-    color: #d1d5db;
-  }
-  
-  .modal-progress {
-    background: #374151;
-  }
-}
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {

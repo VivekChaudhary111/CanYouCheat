@@ -5,6 +5,7 @@ import './LandingPage.css';
 import img1 from '.././assets/images/secure_icon_miniproject.png';
 import img2 from '.././assets/images/live_monitoring_miniproject.png';
 import img3 from '.././assets/images/analytics_miniproject.png';
+import img4 from '.././assets/images/android-chrome-512x512.png';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const LandingPage = () => {
 
           <div className="hero-image">
             <img
-              src="/apple-touch-icon.png"
+              src={img4}
               alt="AI Proctoring Illustration"
             />
           </div>

@@ -926,69 +926,7 @@ div{
   }
 }
 
-/* Dark theme support (optional)
-@media (prefers-color-scheme: dark) {
-  .dashboard-container {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  }
-  
-  .dashboard-header {
-    background: #1e293b;
-    border-bottom-color: #334155;
-  }
-  
-  .user-welcome h1 {
-    color: #f1f5f9;
-  }
-  
-  .user-subtitle {
-    color: #94a3b8;
-  }
-  
-  .status-indicator {
-    color: #94a3b8;
-  }
-  
-  .section-header h2 {
-    color: #f1f5f9;
-  }
-  
-  .section-header p {
-    color: #94a3b8;
-  }
-  
-  .action-card,
-  .stat-card,
-  .insight-card,
-  .info-card,
-  .activity-feed {
-    background: #334155;
-    border-color: #475569;
-  }
-  
-  .action-content h3,
-  .stat-title,
-  .stat-value,
-  .insight-card h3,
-  .info-card h3 {
-    color: #000000;
-  }
-  
-  .action-content p,
-  .stat-description,
-  .insight-card p,
-  .info-card p {
-    color: #000000;
-  }
-  
-  .activity-message {
-    color: #f1f5f9;
-  }
-  
-  .activity-time {
-    color: #94a3b8;
-  }
-} */
+
 /* Enhanced Responsive Design for Student Stats */
 @media (max-width: 1400px) {
   .stats-grid.student-stats {
@@ -1178,39 +1116,3 @@ div{
   }
 }
 
-/* Enhanced Dark Mode Support for Stats
-@media (prefers-color-scheme: dark) {
-  .stat-card {
-    background: #334155;
-    border-color: #475569;
-  }
-  
-  .stat-title,
-  .stat-value {
-    color: #000000;
-  }
-  
-  .stat-description {
-    color: #000000;
-  }
-  
-  .stat-icon {
-    background: linear-gradient(135deg, #475569 0%, #334155 100%);
-  }
-  
-  .trend-badge.excellent {
-    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
-    color: #d1fae5;
-  }
-  
-  .trend-badge.good {
-    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
-    color: #dbeafe;
-  }
-  
-  .trend-badge.needs-improvement,
-  .trend-badge.needs-attention {
-    background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
-    color: #fef3c7;
-  }
-} */
