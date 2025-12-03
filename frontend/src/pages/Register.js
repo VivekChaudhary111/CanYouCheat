@@ -5,9 +5,7 @@ import StatusModal from '../components/StatusModal';
 import Webcam from 'react-webcam';
 import './Auth.css';
 
-const getImageUrl = (filename) => {
-  return `/images/${filename}`;
-};
+import img1 from '.././assets/images/android-chrome-512x512.png';
 
 const Register = () => {
   const { register } = useAuth();
@@ -226,7 +224,7 @@ const Register = () => {
           <div className="brand-content">
             <div className="brand-logo">
               <div className="logo-icon">
-                <img src={getImageUrl("android-chrome-512x512.png")} alt="CanYouCheat Logo" />
+                <img src={img1} alt="CanYouCheat Logo" />
               </div>
               <h1 className="brand-title">CanYouCheat</h1>
             </div>
