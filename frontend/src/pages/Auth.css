@@ -327,7 +327,7 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
-  animation: spin 1s linear infinite;
+  animation: spin 1s ease-out infinite;
 }
 
 @keyframes spin {
