@@ -1,5 +1,6 @@
 ﻿# CanYouCheat - AI-Enhanced Online Exam Proctoring System
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![React Version](https://img.shields.io/badge/react-18.2.0-blue)](https://reactjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-4.4+-green)](https://www.mongodb.com/)
@@ -17,7 +18,7 @@
 - [Project Structure](#project-structure)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-<!-- - [License](#license)-->
+- [License](#license)
 
 ## Overview
 
@@ -284,6 +285,10 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **Feature Requests**: [GitHub Discussions](https://github.com/VivekChaudhary111/CanYouCheat/discussions)
 - **Documentation**: [Wiki](https://github.com/VivekChaudhary111/CanYouCheat/wiki)
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 
 ## Team
 
@@ -304,4 +309,5 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 
 *Last updated: December 2025*
+
 
