@@ -292,7 +292,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Team
 
-- **Vivek Chaudhary** - *Project Lead & Full Stack Developer* - [@VivekChaudhary111](https://github.com/VivekChaudhary111)
+- **Vivek Chaudhary** - *Project Lead & Full Stack Developer with AI/ML Integration* - [@VivekChaudhary111](https://github.com/VivekChaudhary111)
 - **Gaurav Kumar** - *AI/ML Development*
 - **Vishal Chaudhary** - *UI/UX Implementation*
 
@@ -309,5 +309,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 *Last updated: December 2025*
+
 
 
