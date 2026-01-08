@@ -71,6 +71,8 @@ async def health_check():
         "models_loaded": True
     }
 
+# --- ROUTES ---
+
 @app.post("/verify_faces/")
 async def verify_faces_endpoint(payload: FacePayload):
     """Face verification endpoint"""
