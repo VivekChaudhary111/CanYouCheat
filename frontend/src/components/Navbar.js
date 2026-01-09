@@ -52,22 +52,35 @@ const Navbar = () => {
   if (!isAuthenticated) {
     return (
       <nav className="navbar">
-        <div className="navbar-container">
-          <Link to="/" className="navbar-logo">
-            <div className="logo-icon">
-                <img src={img1} alt="CanYouCheat Logo" />
-              </div>
-            <div className="logo-text">
-              <span className="logo-title">CanYouCheat</span>
-              <span className="logo-subtitle">AI Proctoring</span>
-            </div>
-          </Link>
-          <div className="navbar-menu">
-            <Link to="/login" className="navbar-link">Login</Link>
-            <Link to="/register" className="navbar-link register-btn">Register</Link>
-          </div>
-        </div>
-      </nav>
+  <div className="navbar-container">
+    {/* Logo */}
+    <Link to="/" className="navbar-logo">
+      <div className="logo-icon">
+        <img src={img1} alt="CanYouCheat Logo" />
+      </div>
+      <div className="logo-text">
+        <span className="logo-title">CanYouCheat</span>
+        <span className="logo-subtitle">AI Proctoring</span>
+      </div>
+    </Link>
+
+    {/* Hamburger toggle for mobile */}
+    <button className="navbar-toggle" aria-label="Toggle menu">
+      <span className="bar"></span>
+      <span className="bar"></span>
+      <span className="bar"></span>
+    </button>
+
+    {/* Menu */}
+    <div className="navbar-menu">
+      <a href="#hero" className="navbar-link">Home</a>
+      <a href="#pillars" className="navbar-link">Features</a>
+      <a href="#cta" className="navbar-link">Get Started</a>
+      <Link to="/login" className="navbar-link">Login</Link>
+      <Link to="/register" className="navbar-link register-btn">Register</Link>
+    </div>
+  </div>
+</nav>
     );
   }
 
